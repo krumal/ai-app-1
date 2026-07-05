@@ -1,0 +1,7 @@
+interface:
+  display_name: "By Khakhalev: Plan & Act"
+  short_description: "Task planning and milestone execution orchestration"
+  icon_small: "./assets/planact-small.jpg"
+  icon_large: "./assets/planact-large.jpg"
+  brand_color: "#2563EB"
+  default_prompt: "Use $planact to infer whether this task should run in Plan, Act, or Plan-Act mode from the provided path and request, then continue with that workflow."

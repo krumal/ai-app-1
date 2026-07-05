@@ -1,0 +1,256 @@
+.lesson-4 pre {
+  font-size: 1.35rem;
+  line-height: 1.35;
+  padding: 1.2rem;
+  border-radius: 8px;
+}
+
+.lesson-4.index-slide pre {
+  font-size: 0.82rem;
+  line-height: 1.28;
+  padding: 1rem;
+}
+
+.lesson-4.memory-bank-slide pre {
+  max-width: 560px;
+  font-size: 0.64rem;
+  line-height: 1.16;
+  padding: 0.8rem;
+}
+
+.lesson-4.onboarding-example-slide pre {
+  font-size: 0.82rem;
+  line-height: 1.22;
+  padding: 0.9rem;
+}
+
+.lesson-4 .chip,
+.lesson-4 .tile,
+.lesson-4 .quality-card,
+.lesson-4 .danger-tile,
+.lesson-4 .node,
+.lesson-4 .panel,
+.lesson-4 .step {
+  border: 1px solid rgba(59, 130, 246, 0.35);
+  border-radius: 8px;
+  background: rgba(59, 130, 246, 0.1);
+}
+
+.lesson-4 .chip {
+  padding: 1rem 1.1rem;
+  text-align: center;
+}
+
+.lesson-4 .panel {
+  min-height: 250px;
+  padding: 1.5rem;
+}
+
+.lesson-4 .panel.compact {
+  min-height: 0;
+}
+
+.lesson-4 .panel.muted {
+  border-color: rgba(148, 163, 184, 0.35);
+  background: rgba(148, 163, 184, 0.08);
+}
+
+.lesson-4 .panel.accent,
+.lesson-4 .node.blue {
+  border-color: rgba(59, 130, 246, 0.5);
+  background: rgba(59, 130, 246, 0.16);
+}
+
+.lesson-4 .node.green {
+  border-color: rgba(34, 197, 94, 0.5);
+  background: rgba(34, 197, 94, 0.14);
+}
+
+.lesson-4 .node.orange {
+  border-color: rgba(249, 115, 22, 0.5);
+  background: rgba(249, 115, 22, 0.14);
+}
+
+.lesson-4 .tile,
+.lesson-4 .quality-card,
+.lesson-4 .danger-tile,
+.lesson-4 .node,
+.lesson-4 .step {
+  padding: 1.2rem;
+}
+
+.lesson-4 .tile {
+  min-height: 120px;
+  display: grid;
+  place-items: center;
+}
+
+.lesson-4 .tile.tall {
+  min-height: 220px;
+}
+
+.lesson-4 .quality-card {
+  min-height: 96px;
+  display: flex;
+  align-items: center;
+}
+
+.lesson-4 .quality-card.mini {
+  min-height: 48px;
+  padding: 0.65rem 0.9rem;
+}
+
+.lesson-4 .panel .quality-card.mini {
+  background: rgba(255, 255, 255, 0.7);
+  border-color: rgba(59, 130, 246, 0.3);
+}
+
+.lesson-4 .c4-onion {
+  display: flex;
+  justify-content: center;
+  margin-top: 1rem;
+}
+
+.lesson-4 .c4-ring {
+  border-radius: 12px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-start;
+  position: relative;
+  padding: 0.75rem 0.9rem;
+  flex-direction: column;
+}
+
+.lesson-4 .c4-label {
+  font-size: 0.9rem;
+  font-weight: 700;
+  white-space: nowrap;
+  flex-shrink: 0;
+  margin-bottom: 0.5rem;
+}
+
+.lesson-4 .c4-l1 {
+  width: 560px;
+  height: 310px;
+  background: rgba(59, 130, 246, 0.1);
+  border: 2px solid rgba(59, 130, 246, 0.4);
+}
+.lesson-4 .c4-l1 > .c4-label { color: #3b82f6; }
+
+.lesson-4 .c4-l2 {
+  width: 460px;
+  height: 250px;
+  background: rgba(34, 197, 94, 0.1);
+  border: 2px solid rgba(34, 197, 94, 0.4);
+  align-self: center;
+}
+.lesson-4 .c4-l2 > .c4-label { color: #22c55e; }
+
+.lesson-4 .c4-l3 {
+  width: 360px;
+  height: 188px;
+  background: rgba(249, 115, 22, 0.1);
+  border: 2px solid rgba(249, 115, 22, 0.4);
+  align-self: center;
+}
+.lesson-4 .c4-l3 > .c4-label { color: #f97316; }
+
+.lesson-4 .c4-l4 {
+  width: 260px;
+  height: 124px;
+  background: rgba(168, 85, 247, 0.1);
+  border: 2px solid rgba(168, 85, 247, 0.4);
+  align-self: center;
+  justify-content: center;
+  align-items: flex-start;
+}
+.lesson-4 .c4-l4 > .c4-label { color: #a855f7; }
+
+.lesson-4 .tile-sm {
+  border: 1px solid rgba(59, 130, 246, 0.35);
+  border-radius: 8px;
+  background: rgba(59, 130, 246, 0.1);
+  padding: 0.5rem 0.75rem;
+  display: flex;
+  align-items: center;
+}
+
+.lesson-4 .danger-tile {
+  min-height: 150px;
+  display: grid;
+  place-items: center;
+  border-color: rgba(239, 68, 68, 0.45);
+  background: rgba(239, 68, 68, 0.12);
+  color: #f87171;
+}
+
+.lesson-4 .node {
+  min-height: 110px;
+  display: grid;
+  place-items: center;
+}
+
+.lesson-4 .node.small {
+  min-height: 70px;
+  padding: 0.7rem;
+}
+
+.lesson-4 .step {
+  display: grid;
+  align-items: end;
+  color: #2563eb;
+}
+
+.lesson-4 .blue {
+  border-color: rgba(59, 130, 246, 0.4) !important;
+  background: rgba(59, 130, 246, 0.1) !important;
+}
+
+.lesson-4 .green {
+  border-color: rgba(34, 197, 94, 0.4) !important;
+  background: rgba(34, 197, 94, 0.1) !important;
+}
+
+.lesson-4 .orange {
+  border-color: rgba(249, 115, 22, 0.4) !important;
+  background: rgba(249, 115, 22, 0.1) !important;
+}
+
+.lesson-4 .purple {
+  border-color: rgba(168, 85, 247, 0.4) !important;
+  background: rgba(168, 85, 247, 0.1) !important;
+}
+
+.lesson-4 .arrow {
+  font-size: 2.8rem;
+  font-weight: 700;
+  opacity: 0.55;
+}
+
+.lesson-4 .label {
+  font-size: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  opacity: 0.55;
+  font-weight: 700;
+}
+
+.lesson-4 .file-title {
+  font-size: 2rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-weight: 700;
+  color: #2563eb;
+}
+
+.lesson-4 .clean-list {
+  margin-top: 1rem;
+  display: grid;
+  gap: 0.75rem;
+  font-size: 1.45rem;
+  line-height: 1.15;
+  font-weight: 700;
+}
+
+.lesson-4 .clean-list li::marker {
+  color: #3b82f6;
+}

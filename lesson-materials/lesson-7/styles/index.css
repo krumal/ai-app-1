@@ -1,0 +1,268 @@
+@import "@fontsource/ibm-plex-sans/300.css";
+@import "@fontsource/ibm-plex-sans/400.css";
+@import "@fontsource/ibm-plex-sans/500.css";
+@import "@fontsource/ibm-plex-sans/600.css";
+
+.slidev-layout {
+  --blue: #3b82f6;
+  --green: #22c55e;
+  --orange: #f97316;
+  --purple: #a855f7;
+  --red: #ef4444;
+  --gray: #94a3b8;
+  --panel-border: rgba(59, 130, 246, 0.35);
+  --panel-bg: rgba(59, 130, 246, 0.1);
+  --muted-bg: rgba(148, 163, 184, 0.08);
+  font-family: "IBM Plex Sans", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-weight: 400;
+}
+
+.slidev-layout h1 {
+  font-size: 3.05rem;
+  line-height: 1.08;
+  letter-spacing: 0;
+  font-weight: 400;
+}
+
+.slidev-layout .text-6xl,
+.slidev-layout .text-5xl,
+.slidev-layout .text-4xl {
+  font-weight: 400;
+}
+
+.slidev-layout .font-medium {
+  font-weight: 400;
+}
+
+.slidev-layout .chip,
+.slidev-layout .tile,
+.slidev-layout .node,
+.slidev-layout .panel,
+.slidev-layout .card {
+  border: 1px solid var(--panel-border);
+  border-radius: 8px;
+  background: var(--panel-bg);
+}
+
+.slidev-layout .chip {
+  padding: 1rem 1.1rem;
+  text-align: center;
+  font-weight: 400;
+}
+
+.slidev-layout .tile {
+  min-height: 6rem;
+  padding: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  line-height: 1.18;
+  font-weight: 400;
+}
+
+.slidev-layout .panel {
+  padding: 1.35rem;
+  min-height: 12rem;
+  font-weight: 400;
+}
+
+.slidev-layout .card {
+  padding: 1rem;
+  font-size: 1.28rem;
+  font-weight: 400;
+  line-height: 1.22;
+}
+
+.slidev-layout .node {
+  min-height: 6.2rem;
+  padding: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.22rem;
+  font-weight: 400;
+  line-height: 1.16;
+}
+
+.slidev-layout .flow {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.slidev-layout .flow .node {
+  flex: 1 1 0;
+}
+
+.slidev-layout .arrow {
+  font-size: 2.55rem;
+  font-weight: 400;
+  opacity: 0.5;
+}
+
+.slidev-layout .big {
+  font-size: 2.45rem;
+  font-weight: 400;
+  line-height: 1.08;
+}
+
+.slidev-layout .label {
+  font-size: 0.9rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  opacity: 0.55;
+}
+
+.slidev-layout .list,
+.slidev-layout .steps {
+  display: grid;
+  gap: 0.55rem;
+}
+
+.slidev-layout .schema-frame {
+  height: 28.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.4rem 1.2rem 1.2rem;
+}
+
+.slidev-layout .process-schema {
+  max-width: 94%;
+  max-height: 94%;
+  object-fit: contain;
+  border-radius: 8px;
+}
+
+.slidev-layout .list > div,
+.slidev-layout .steps > div {
+  padding: 0.72rem 0.95rem;
+  border-radius: 8px;
+  background: var(--muted-bg);
+  font-size: 1.22rem;
+  font-weight: 400;
+  line-height: 1.18;
+}
+
+.slidev-layout .steps > div {
+  font-size: 1.12rem;
+}
+
+.slidev-layout .debt-layout {
+  align-items: stretch;
+}
+
+.slidev-layout .debt-definition {
+  min-height: 0;
+  max-height: 26.5rem;
+  overflow: hidden;
+}
+
+.slidev-layout .debt-definition > div:last-child {
+  font-size: 2.05rem;
+  line-height: 1.08;
+  font-weight: 400;
+}
+
+.slidev-layout .debt-tiles .tile {
+  min-height: 7rem;
+  padding: 0.8rem;
+  font-size: 1.18rem;
+  line-height: 1.12;
+}
+
+.slidev-layout .review-principle {
+  border: 1px solid var(--panel-border);
+  border-radius: 8px;
+  padding: 1.15rem 1.35rem;
+  min-height: 9rem;
+}
+
+.slidev-layout .review-optics-grid .card {
+  min-height: 5.9rem;
+  padding: 0.85rem 0.95rem;
+  font-size: 1.16rem;
+  line-height: 1.16;
+}
+
+.slidev-layout .review-optics-grid .card small {
+  display: block;
+  margin-top: 0.25rem;
+  font-size: 0.83rem;
+  line-height: 1.18;
+}
+
+.slidev-layout .sdlc-conclusion {
+  border: 1px solid var(--panel-border);
+  border-radius: 8px;
+  padding: 1.25rem 1.5rem;
+  font-size: 2.15rem;
+  line-height: 1.12;
+  font-weight: 400;
+}
+
+.slidev-layout .course-summary-main {
+  border: 1px solid var(--panel-border);
+  border-radius: 8px;
+  padding: 1.4rem 1.55rem;
+  min-height: 9.5rem;
+  display: flex;
+  align-items: center;
+  font-size: 2.15rem;
+  line-height: 1.2;
+  font-weight: 400;
+}
+
+.slidev-layout .course-summary-grid .tile {
+  min-height: 5.7rem;
+  padding: 0.85rem;
+  font-size: 1.15rem;
+  line-height: 1.14;
+}
+
+.slidev-layout .blue {
+  border-color: rgba(59, 130, 246, 0.4) !important;
+  background: rgba(59, 130, 246, 0.1) !important;
+}
+
+.slidev-layout .green {
+  border-color: rgba(34, 197, 94, 0.4) !important;
+  background: rgba(34, 197, 94, 0.1) !important;
+}
+
+.slidev-layout .orange {
+  border-color: rgba(249, 115, 22, 0.4) !important;
+  background: rgba(249, 115, 22, 0.1) !important;
+}
+
+.slidev-layout .purple {
+  border-color: rgba(168, 85, 247, 0.4) !important;
+  background: rgba(168, 85, 247, 0.1) !important;
+}
+
+.slidev-layout .red,
+.slidev-layout .bad {
+  border-color: rgba(239, 68, 68, 0.42) !important;
+  background: rgba(239, 68, 68, 0.1) !important;
+}
+
+.slidev-layout .gray {
+  border-color: rgba(148, 163, 184, 0.35) !important;
+  background: rgba(148, 163, 184, 0.08) !important;
+}
+
+.slidev-layout .accent,
+.slidev-layout .good {
+  border-color: rgba(59, 130, 246, 0.45) !important;
+  background: rgba(59, 130, 246, 0.12) !important;
+}
+
+.dark .slidev-layout {
+  --panel-border: rgba(96, 165, 250, 0.34);
+  --panel-bg: rgba(96, 165, 250, 0.1);
+  --muted-bg: rgba(255, 255, 255, 0.08);
+}

@@ -1,0 +1,40 @@
+{
+  "version": 1,
+  "storyPoints": 13,
+  "averageStoryPoints": 11.4,
+  "scale": "fibonacci",
+  "generatedAt": "2026-06-04T15:41:03.398Z",
+  "sources": [
+    "draft.md",
+    "plan.md",
+    "implementation_progress.md"
+  ],
+  "votes": [
+    {
+      "role": "backend engineer",
+      "storyPoints": 13,
+      "reason": "The feature spans multiple backend components (shared types, eligibility logic, estimate core, file safety, digest exclusion, API endpoint), requires extensive board integration, system file handling, thorough unit/integration tests, and full UI implementation with badge, popover, regeneration, and documentation updates. The breadth and coordination across backend, API, and UI make it a sizable effort, fitting well into the 13‑point range."
+    },
+    {
+      "role": "frontend engineer",
+      "storyPoints": 5,
+      "reason": "The frontend work involves adding a new API client method, integrating estimate actions into the task modal, handling loading/error states, rendering a compact badge, and building a popover with detailed vote information and regeneration support. It requires state management updates, UI styling, and ensuring the board refreshes instantly after a successful estimate, but does not involve deep architectural changes. The effort is moderate and fits well into a 5‑point estimate."
+    },
+    {
+      "role": "QA engineer",
+      "storyPoints": 13,
+      "reason": "The feature spans backend core logic, board integration, digest exclusion, API endpoint, UI components, extensive testing, and documentation updates. Coordinating these parts, handling edge cases (eligibility, system file safety, all‑settled AI calls), and ensuring deterministic median/average calculations make it a high‑complexity task, fitting the 13‑point tier."
+    },
+    {
+      "role": "tech lead",
+      "storyPoints": 13,
+      "reason": "The feature spans backend core logic, board integration, digest exclusion, API endpoint, UI components, extensive testing, and documentation updates. It involves multiple modules, parallel AI calls, system file handling, and UI state management, making it a sizable but manageable effort."
+    },
+    {
+      "role": "product-minded implementation reviewer",
+      "storyPoints": 13,
+      "reason": "The feature spans multiple layers: backend contracts, AI orchestration with parallel participants, deterministic vote aggregation, system‑file safety, board integration, digest exclusion, a full API endpoint, extensive UI changes (badge, popover, regeneration), comprehensive unit/integration tests, and documentation updates. Coordinating all these parts and ensuring reliability makes it a large, high‑complexity effort."
+    }
+  ],
+  "explanation": "The final estimate is 13 points because the median vote is 13. The average vote is 11.4."
+}
