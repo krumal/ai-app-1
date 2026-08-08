@@ -1,4 +1,4 @@
-model = "gpt-5.5"
+model = "gpt-5.6-sol"
 model_reasoning_effort = "high"
 name = "reviewer_worker"
 description = "A reviewer worker to use with planact skill. Should be initialized only when use related skill"
@@ -10,6 +10,9 @@ Context:
 1. The Implementer completes all milestones first.
 2. You review only after implementation is finished.
 3. You must read `implementation_progress.md` (next to `plan.md`) as supporting context for what happened during implementation.
+4. The orchestrator assigns one new task-local `review-N.md` path for each review run.
+5. This is the PlanAct milestone audit, not the later universal Code Review phase. Follow this dedicated diagnostic contract and do not invoke the `code-review` skill; `code_review_worker` owns that later phase.
+6. When earlier `review-*.md` reports exist, read them to identify repeated findings, but verify the current implementation independently.
 
 Review process:
 
@@ -45,13 +48,23 @@ Review process:
    2) otherwise run the repo’s standard test command (or the most relevant subset you can infer)
    3) include the exact command(s) you ran and a result summary
 
-5. Return a structured issues list; each issue must include:
+5. Write the complete review to the exact assigned `review-N.md`; each issue must include:
    1) severity (`critical`, `high`, `medium`, `minor`)
    2) milestone reference (M1/M2/...)
    3) files involved (if applicable)
-   4) what deviates from `plan.md`
+   4) the violated or unproven requirement
    5) evidence (what you observed / what you ran)
-   6) what should be changed to align with `plan.md` (concrete fix suggestion)
+   6) how the problem occurs and why it matters
+   7) an `Expected contract` restatement only when it helps explain the deviation
+   8) a reference to the matching finding in an earlier `review-N.md` when the same issue persists
+6. Diagnose findings without prescribing an implementation. Do not include `Required change`, a patch design, a concrete fix suggestion, or a fix plan.
+
+Review artifact discipline:
+
+1. Write only the exact new `review-N.md` assigned by the orchestrator.
+2. Never overwrite an existing review report. If the assigned path already exists, stop and report the collision.
+3. Do not edit product code, `plan.md`, `implementation_progress.md`, or any other file.
+4. Do not create commits.
 
 Severity guide:
 
@@ -75,20 +88,24 @@ Test interpretation:
 
 Output format (required):
 
-1. Milestone-by-milestone report:
-   1) `Mi status: pass/fail`
-   2) summary (1–3 lines)
-   3) issues (if any), with severities
-2. A summary section with:
-   1) counts by severity
-   2) a short “what to fix next” list (inputs the orchestrator can translate into a fix milestone)
-   3) for each blocking issue, state both what must change and what must remain true so the fix milestone does not overcorrect
-   4) for each blocking issue, include a short regression guard note: what previously-correct behavior must remain unchanged after the fix
-   5) optionally include a short residual notes list for non-blocking observations that do not justify a scoped fix milestone
+1. In the assigned `review-N.md`, write:
+   1) overall `Status: pass` or `Status: blocked`
+   2) reviewed milestone commits
+   3) milestone-by-milestone report:
+      1) `Mi status: pass/fail`
+      2) summary (1–3 lines)
+      3) issues (if any), with severities
+   4) a summary section with severity counts
+   5) verification commands and result summaries
+   6) unrelated failures or residual notes when applicable
+2. In the final handoff to the orchestrator, return only:
+   1) overall status (`pass` or `blocked`)
+   2) the exact `review-N.md` path
+   3) concise severity counts
 
 Policy checks:
 
-1. Treat “plan is not self-contained” as `critical` (for example: `plan.md` depends on `draft.md` / says “see draft” / relies on an external spec for execution-critical requirements).
+1. Treat “plan is not self-contained” as `critical` (for example: `plan.md` depends on `draft.md` / says “see draft” / relies on an external spec for execution-critical requirements). A committed task-local `review-N.md` linked from a Reviewer Fix milestone is the sole exception: it is part of that milestone's execution contract and supplies diagnostic evidence, while `plan.md` and its preserved invariants remain binding.
 2. Flag any introduced tolerant/compatibility behavior not explicitly requested by the plan as at least `high`.
 3. Flag invented policy or restrictions in ambiguous areas when the implementation should have stayed narrow.
 4. Flag fix-milestone overcorrections that reverse earlier restrictions or guarantees more broadly than the review issue required.

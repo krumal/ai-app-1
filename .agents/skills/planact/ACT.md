@@ -15,10 +15,10 @@ flowchart TD
     I --> D
 
     D -->|No (all done)| J["Spawn Reviewer (JIT, once)\nProfile: reviewer_worker\nRemember agent_id and reuse it"]
-    J --> K["Dispatch milestone review\n(plan.md + all milestone commits + implementation_progress.md)"]
-    K --> L["Wait for reviewer report\n(issues per milestone, severities)"]
+    J --> K["Assign next review-N.md path\nDispatch milestone review\n(plan.md + commits + progress log)"]
+    K --> L["Wait for reviewer\nverify/read review-N.md\ncommit report + orchestration"]
     L --> M{"Reviewer blocking issues?\ncritical/high/medium"}
-    M -->|Yes| N["Amend plan.md (append-only)\n- append Reviewer Fix milestone\n- update index/execution order/orchestration\n- commit plan.md"]
+    M -->|Yes| N["Amend plan.md (append-only)\n- link exact review report\n- append Reviewer Fix milestone\n- commit plan.md"]
     N --> E
     M -->|No| U{"Reviewer only minor issues remain?"}
     U -->|Yes| V["Explain reviewer minor issues to user\nAsk whether they should be fixed"]
@@ -32,7 +32,7 @@ flowchart TD
     CT --> CU{"Code review blocking issues?\ncritical/high/medium"}
     CU -->|Yes| CN["Amend plan.md (append-only)\n- append Code Review Fix milestone\n- update index/execution order/orchestration\n- commit plan.md"]
     CN --> CF["Dispatch code review fix milestone to Implementer\n(update progress log + commit hashes)"]
-    CF --> CT
+    CF --> CS
     CU -->|No| CV{"Code review only minor issues remain?"}
     CV -->|Yes| CW["Explain code review minor issues to user\nAsk whether they should be fixed"]
     CW --> CX{"User wants code review minor fixes?"}
@@ -46,7 +46,7 @@ flowchart TD
   end
 
   subgraph R["Reviewer (reviewer_worker)"]
-    R1["Audit milestones against plan.md\n- check scope/AC/verification/invariants\n- read implementation_progress.md\n- report issues by severity"]
+    R1["Audit milestones against plan.md\n- check scope/AC/verification/invariants\n- write diagnostic review-N.md\n- return status + report path"]
   end
 
   subgraph CWR["Code Review Worker (code_review_worker)"]
@@ -81,6 +81,7 @@ flowchart TD
    2. spawn the Reviewer only after the Implementer reports all milestones done
    3. spawn the Code Review Worker only after milestone review is clear enough to proceed
    4. reuse all spawned agents across their respective fix iterations
+6. While waiting for an agent, do not narrate unchanged status snapshots; report only material progress, a result, or a blocker.
 
 # Expected Inputs
 
@@ -117,6 +118,15 @@ flowchart TD
 | Code Reviewer | not started |         |
 ```
 
+# Persistence: Milestone Review Reports (required)
+
+1. Before each review, assign `<task-folder>/review-N.md`, where `N = max(existing N) + 1`.
+2. The Reviewer may create only that file. Never overwrite prior reports, edit other files, or commit.
+3. The report diagnoses each finding: severity, violated contract, evidence, mechanism, impact, optional expected contract, and a link to the prior finding when repeated. It must not propose a fix.
+4. The Reviewer returns only status, report path, and severity counts.
+5. The orchestrator reads and commits the report with the orchestration update before continuing. A later Reviewer Fix milestone amendment is a separate commit.
+6. A committed task-local `review-N.md` linked by a Reviewer Fix milestone is part of that milestone's execution contract and the sole exception to the self-contained-plan rule. `plan.md` and its preserved invariants remain binding.
+
 # Phase 1: Initialization
 
 1. Use the provided `plan.md` path and treat its directory as the task folder.
@@ -152,7 +162,7 @@ flowchart TD
 1. Execute milestones strictly sequentially, in the order given by `Execution order (derived from dependencies)`.
 2. Spawn the Implementer agent only once, right before starting the first milestone:
    1. spawn using `implementer_worker`
-   2. spawn with `fork_context=false`
+   2. spawn with `fork_turns="none"`
    3. remember its `agent_id` and reuse it for all fix iterations
 3. For each milestone `Mi` (in execution order):
    1. ensure all `Depends on` milestones are `done`; if not, stop and report plan inconsistency
@@ -180,48 +190,19 @@ flowchart TD
 
 # Phase 3: Milestone Review (Reviewer audits after all milestones)
 
-1. Do not start review until there is something to review.
-2. Before running the Reviewer, ensure ALL of the following are true:
-   1. every milestone row in the orchestration table has `Status = done`
-   2. the Implementer has reported commit hashes for each milestone (collect them into a single list for the reviewer)
-   3. there are no `Status = in progress` rows
-3. Spawn the Reviewer agent only once, right before the first review:
-   1. spawn using `reviewer_worker`
-   2. spawn with `fork_context=false`
-   3. remember its `agent_id` and reuse it across reviewer-fix iterations
-4. Dispatch the Reviewer with only significant information:
-   1. the `plan.md` path
-   2. the set of commit hashes produced during implementation (grouped by milestone if available)
-   3. the path to `implementation_progress.md`
-   4. the task-level contract summary used during implementation dispatches
-5. Set `Reviewer` status to `in progress`, wait for the report, then set it to `done`.
-6. Treat issue severities as:
-   1. `critical`, `high`, and `medium` are blocking
-   2. `minor` is non-blocking by default
-7. If the Reviewer reports only `minor` issues and no blocking issues:
-   1. do not automatically enter the fix loop
-   2. explain the remaining `minor` issues to the user
-   3. ask whether those `minor` issues should be fixed before proceeding to code review
+1. Start only after every milestone is `done`, every milestone has commit hashes, and no row is `in progress`.
+2. Spawn one persistent `reviewer_worker` with `fork_turns="none"` immediately before the first review; reuse it for later review cycles.
+3. For each review, set Reviewer status to `in progress`, assign the next `review-N.md`, and dispatch the Reviewer with `plan.md`, milestone commits, `implementation_progress.md`, the task-level contract summary, the assigned report path, and prior review paths.
+4. Wait for the handoff, verify and read the report, set Reviewer status to `done`, then commit the report with the orchestration update.
+5. Treat `critical`, `high`, and `medium` as blocking. If only `minor` findings remain, explain them and ask the user whether to fix them before code review.
 
 # Phase 4: Reviewer Fix Loop (plan amendment + reuse the same Implementer)
 
-1. If the Reviewer reports any blocking issues (`critical`, `high`, or `medium`), or the user explicitly asks to fix reviewer-reported `minor` issues:
-   1. amend `plan.md` by appending one new milestone (a “Reviewer Fix milestone”) that addresses the issues
-      1. `What changes now` (the minimal required correction)
-      2. `What must remain true` (preserved constraints, consumer behavior expectations, and earlier milestone guarantees)
-   2. update:
-      1. milestone index
-      2. milestone details (new fix milestone section)
-      3. execution order (fix milestone last)
-      4. orchestration table (add a new row for the fix milestone with empty `Commits`, reset `Reviewer` status to `not started`)
-   3. commit `plan.md` with a message like `plan: add reviewer fix milestone`
-2. Before dispatching the fix milestone, restate the preserved invariants in the implementation brief so the fix is scoped to the reported defect and does not reverse earlier restrictions more broadly than required.
-3. Dispatch the same Implementer agent to implement only the new fix milestone, update the progress log, and report new commits.
-4. Update the orchestration table for the fix milestone (`Status = done`, fill `Commits`).
-4.1 require regression re-check evidence for previously affected consumer surfaces before returning to review.
-5. Return to Phase 3 review (Reviewer audits again after the fix milestone).
-6. Repeat until there are no blocking issues, and any remaining `minor` issues have either been fixed or explicitly declined by the user.
-7. If the same blocking issue repeats twice across review cycles, stop and report `blocked: plan underspecified or conflicting constraints` instead of continuing a blind fix loop.
+1. For blocking findings, or minor findings the user chose to fix, append a Reviewer Fix milestone that links the exact review report, identifies the findings in scope, preserves existing invariants, requires the findings to stop reproducing, and reruns affected verification. Do not design the fix in `plan.md`.
+2. Update the milestone index, execution order, and orchestration table; add the fix row, reset Reviewer status to `not started`, and commit the plan amendment.
+3. Send the milestone, linked report, and preserved invariants to the same Implementer. Require progress-log updates, focused commits, and regression evidence for affected surfaces.
+4. Mark the fix milestone `done`, record its commits, and return to Phase 3 until no blocking findings remain and minor findings are fixed or explicitly declined.
+5. If the same finding survives two completed Reviewer Fix milestones, stop with `blocked: reviewer fix loop is not converging`.
 
 # Phase 5: Code Review (universal full-change review)
 
@@ -232,7 +213,7 @@ flowchart TD
    3. the complete implementation commit set is available, including any reviewer-fix milestones
 3. Spawn the Code Review Worker only once, right before the first code review:
    1. spawn using `code_review_worker`
-   2. spawn with `fork_context=false`
+   2. spawn with `fork_turns="none"`
    3. remember its `agent_id` and reuse it across code-review fix iterations
 4. Dispatch the Code Review Worker with only significant information:
    1. the review target and scope

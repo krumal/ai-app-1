@@ -15,7 +15,7 @@
 4. If `draft.md` was created earlier during Brainstorming before the task branch existed, commit that `draft.md` first when entering Planning.
 5. This rule applies in particular to `draft.md` and `plan.md`.
 6. In Plan-Act mode, do not start `ACT.md` until the newly created `plan.md` has been committed.
-7. `plan.md` is not ready to commit until the Planning Artifact Review Gate returns `pass`.
+7. `plan.md` is not ready to commit until the Planning Simplification and Artifact Review gates return `pass`.
 
 # Input Path (expected)
 
@@ -200,25 +200,49 @@
    1. `plan.md` must not contain “see draft”, “refer to draft”, or any file path reference that is required to implement
    2. if `plan.md` mentions another file, it must be for provenance only and the plan must still be executable without opening it
 
+# Approved Architecture Boundary (required)
+
+1. Planning may choose concrete files, milestones, tests, verification commands, and implementation details within the solution approved in `draft.md`.
+2. Planning must not introduce net-new product behavior, persisted state, contracts, runtime mechanisms, API/UI surfaces, or architectural concepts absent from the approved draft.
+3. If repository research shows that a new product or architectural concept is required:
+   1. stop Planning
+   2. return to Brainstorming and update `draft.md`
+   3. rerun the Brainstorming self-review, Draft Simplification Gate, and Artifact Review Gate
+   4. obtain user approval for the updated draft before resuming Planning
+4. Concretizing an approved draft decision is allowed only when it does not materially change user-visible behavior, scope, constraints, or architecture.
+
 # Final Simplification Pass (must pass)
 
-1. Before completing the Planning stage, review the entire `plan.md` and ask yourself explicitly:
-   1. Does this plan follow DRY, KISS, and YAGNI?
-2. If the answer is “no” or “not fully”, revise the plan before finishing.
-3. During this pass, remove or simplify:
-   1. duplicated responsibilities across milestones
-   2. unnecessary abstractions or new subsystems
-   3. speculative or future-facing scope not required for the agreed task
-   4. milestone splits that do not reflect real dependency boundaries
-4. Prefer extending existing contracts/modules over introducing new layers when that keeps the plan simpler and clearer.
-5. Do not finish Planning until the simplified plan still remains self-contained and executable.
+1. For each acceptance criterion and fixed decision in the approved draft, plan the minimum code, configuration, and verification work required to satisfy it.
+2. Review every net-new concept or artifact in the complete `plan.md` across product/domain, code/dependency/configuration, runtime/operations/build, API/UI, verification, logging, documentation, and rollout concerns.
+3. For each item, identify internally:
+   1. its exact source in an observable draft acceptance criterion, fixed user decision, repository constraint, or concrete correctness, security, or data-integrity requirement
+   2. its concrete consumer or required use that already exists, is delivered by this task, or follows from an explicitly approved downstream requirement
+   3. whether an existing repository concept can satisfy the same requirement more simply
+   4. whether another plan item already produces the same outcome or verifies the same risk
+   5. whether removing it would preserve the approved behavior and constraints
+4. A consumer may be inside or outside this task, but a hypothetical future use does not count.
+5. Do not treat a test or assertion created only for a proposed mechanism as an independent consumer of that mechanism. Verification is a valid consumer only when it protects a required behavior or concrete risk not already covered at a simpler layer.
+6. Remove any item that lacks a valid source, lacks a concrete consumer or required use, duplicates an outcome or risk already covered more simply, or is needed only for a hypothetical future scenario.
+7. Collapse duplicated responsibilities across milestones, and fold setup, configuration, verification, and documentation into the deliverable that consumes them instead of creating standalone scope.
+8. Prefer extending existing contracts/modules over introducing new layers when that keeps the plan simpler and clearer.
+9. Do not finish Planning until the simplified plan follows DRY, KISS, and YAGNI while remaining self-contained and executable.
+
+# Plan Simplification Gate
+
+1. Before artifact review, run `plan_simplify_worker` with the task folder, artifact path, and `Plan Simplification` stage; on reruns also pass a concise summary of changes since its previous review.
+2. Reuse the worker from Brainstorming, or spawn it once with `fork_turns="none"`.
+3. Evaluate its findings against the artifact and repository; do not apply them automatically.
+4. Ask the user when a finding requires a product choice, scope change, or major architecture decision.
+5. Apply accepted simplifications, repeat Planning self-checks, and rerun this gate until it returns `pass`.
+6. Do not run artifact review until it returns `pass`.
 
 # Artifact Review Gate
 
-1. Run `artifact_quality_reviewer_worker` after `plan.md` has been written or updated and all Planning self-checks have passed.
+1. Run `artifact_quality_reviewer_worker` only after the Plan Simplification Gate passes.
 2. Reuse the existing artifact reviewer if one was already spawned during this PlanAct run; otherwise spawn it once:
    1. spawn using `artifact_quality_reviewer_worker`
-   2. spawn with `fork_context=false`
+   2. spawn with `fork_turns="none"`
    3. remember its `agent_id`
    4. reuse the same reviewer for every Artifact Review Gate rerun in this PlanAct run
    5. do not close or delete the reviewer after it returns a result

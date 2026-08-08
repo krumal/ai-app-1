@@ -69,6 +69,33 @@ Use a concise self-contained structure like:
    7. acceptance criteria and behavioral expectations
 3. If the task is too large for one implementation plan, decompose it and write the draft only for the first sub-task the user wants to pursue now.
 
+# DRY, KISS, YAGNI And Overengineering Guard
+
+1. Start from the agreed user-visible behavior and repository constraints, then design the smallest solution that satisfies them. Treat production readiness as a quality bar for that solution, not as permission to add scope.
+2. Prefer reusing or simplifying an existing configuration surface, state, hook, job, service, UI state, API contract, or test pattern over introducing a parallel concept.
+3. Acceptance criteria must describe observable behavior, an explicit user decision, or a required correctness, security, or data-integrity outcome. Do not turn an implementation detail introduced during brainstorming into an acceptance criterion to make that detail appear required. Record user-selected or repository-mandated technologies under fixed decisions or constraints instead.
+4. Every net-new concept or artifact, such as product state, a dependency or abstraction, configuration, a runtime or operational mechanism, an API/UI surface, verification, logging, or documentation, must:
+   1. be required by an explicit acceptance criterion, fixed user decision, or concrete correctness, security, or data-integrity requirement
+   2. have a concrete consumer or required use that already exists, is delivered by this task, or follows from an explicitly approved downstream requirement
+   3. survive repository inspection confirming that no existing concept can satisfy the same requirement more simply
+5. A consumer may be inside or outside this task, but a hypothetical future use does not count.
+6. A test or assertion added only to exercise a proposed mechanism is not an independent consumer of that mechanism. Verification counts as a consumer only when it protects a required behavior or concrete risk that is not already covered at a simpler layer.
+7. Remove a proposed concept when deleting it would preserve all acceptance criteria and fixed decisions, or when it has no concrete consumer or required use.
+8. Collapse concepts that have the same observable effect. Do not keep separate states, intents, commands, checks, or branches only because they represent different historical causes.
+9. Do not introduce speculative infrastructure for hypothetical future needs, including:
+   1. feature flags
+   2. compatibility or fallback paths
+   3. replay, reconciliation, or backfill mechanisms
+   4. new queues, schedulers, outboxes, or state machines
+   5. generalized abstractions for a single known use
+   unless the user explicitly requires them, a concrete correctness, security, or data-integrity requirement makes them necessary, or current repository constraints make them necessary.
+10. Do not extract a helper used only once unless it represents an independently meaningful domain rule or materially improves correctness and testability.
+11. Prefer tests of observable behavior and persisted outcomes. Do not add tests whose only purpose is to prove that removed implementation details no longer exist.
+12. Do not add a new UI or API concept when existing behavior can represent the required result without losing user-visible functionality.
+13. If a simpler design depends on an unresolved product or operational trade-off, ask the user before locking a more complex design into the draft.
+14. If the task contains independent system changes that are not required for the same observable outcome, split them instead of bundling them into one broad draft.
+15. Do not call the solution minimal, simple, or free of overengineering until the final simplification check below passes.
+
 # Workflow
 
 1. Explore project context first:
@@ -102,14 +129,29 @@ Use a concise self-contained structure like:
    1. explain trade-offs briefly
    2. recommend one option
    3. get the user's direction before locking it into the draft
-6. Present the emerging draft in sections when needed:
+6. Perform the final solution simplification check:
+   1. list internally all proposed net-new concepts:
+      1. product/domain behavior, state, and contracts
+      2. code, dependency, abstraction, and configuration choices
+      3. runtime, operational, build, and delivery mechanisms
+      4. API/UI, verification, logging, documentation, and rollout artifacts
+   2. for each concept, ask:
+      1. which observable acceptance criterion, fixed user decision, or concrete correctness, security, or data-integrity requirement is its source
+      2. which existing or task-delivered consumer uses it, or which explicitly approved downstream requirement needs it
+      3. whether an existing repository concept can satisfy the same requirement
+      4. whether it can be removed without changing observable behavior
+      5. whether another proposed concept produces or verifies the same downstream effect
+      6. whether it is needed now or only for a hypothetical future scenario
+   3. remove or collapse every concept that lacks a valid source, lacks a concrete consumer or required use, duplicates an outcome or risk already covered more simply, or otherwise does not pass this check
+   4. if the answer depends on an unknown user trade-off, resolve it before writing the final draft
+7. Present the emerging draft in sections when needed:
    1. scope
    2. constraints / fixed decisions
    3. user journey and behavior
    4. testing and documentation expectations
    5. acceptance criteria
-7. Write or update `draft.md` in the task folder.
-8. Self-review the draft:
+8. Write or update `draft.md` in the task folder.
+9. Self-review the draft:
    1. no placeholders (`TODO`, `TBD`, unresolved “maybe” wording)
    2. no contradictions between sections
    3. no ambiguity that would cause `PLAN.md` to branch into multiple materially different plans
@@ -117,17 +159,23 @@ Use a concise self-contained structure like:
    5. if the feature has a user-facing flow, the user journey is explicit enough to guide planning
    6. the required test types are explicit enough that planning does not need to guess between unit, integration, and e2e coverage
    7. documentation updates are explicit enough that they can become plan milestones or acceptance criteria
-9. Run the Artifact Review Gate for `draft.md`.
-10. If the artifact reviewer returns `fail`, revise `draft.md`, repeat the self-review, and rerun the Artifact Review Gate.
-11. Do not present the draft to the user for review until the artifact reviewer returns `pass`.
-12. Before asking the user to review the file, present a short in-chat summary of the drafted task:
+   8. acceptance criteria describe observable behavior or required outcomes rather than implementation details introduced during brainstorming
+   9. no net-new concept without a valid source, a concrete consumer or required use, and verified absence of a simpler existing repository concept
+   10. no duplicated states, responsibilities, checks, or abstractions with equivalent observable effects
+   11. no speculative infrastructure or future-facing scope
+   12. no simpler existing repository surface that can satisfy the same acceptance criteria
+10. Run the Draft Simplification Gate for `draft.md` until it passes.
+11. Run the Artifact Review Gate for the simplified `draft.md`.
+12. If either reviewer causes a revision, repeat the self-review, Draft Simplification Gate, then Artifact Review Gate.
+13. Do not present the draft to the user until both gates pass.
+14. Before asking the user to review the file, present a short in-chat summary of the drafted task:
    1. goal
    2. scope
    3. non-goals
    4. fixed decisions / constraints
    5. acceptance criteria
-13. Ask the user to review the written `draft.md`.
-14. After approval:
+15. Ask the user to review the written `draft.md`.
+16. After approval:
    1. if the user asked only for brainstorming, stop
    2. if the user wants planning next, hand off to `PLAN.md`
 
@@ -147,7 +195,7 @@ Use a concise self-contained structure like:
 
 # User Review Gate
 
-After the draft is written, self-reviewed, and passed by the Artifact Review Gate, first provide a short in-chat summary of the task, then ask the user to review it before planning.
+After the draft passes the Draft Simplification and Artifact Review gates, summarize it in chat, then ask the user to review it before planning.
 
 Do not ask the user to open the file without first summarizing the task in chat.
 
@@ -159,15 +207,24 @@ If the user requests changes:
 
 1. update `draft.md`
 2. re-run the draft self-review
-3. rerun the Artifact Review Gate
-4. ask for approval again only after the reviewer returns `pass`
+3. rerun the Draft Simplification Gate, then the Artifact Review Gate
+4. ask for approval again only after both return `pass`
+
+# Draft Simplification Gate
+
+1. Before artifact review, run `plan_simplify_worker` with the task folder, artifact path, and `Draft Simplification` stage; on reruns also pass a concise summary of changes since its previous review.
+2. Spawn it once with `fork_turns="none"`; reuse it for later simplification passes and Planning.
+3. Evaluate its findings against the artifact and repository; do not apply them automatically.
+4. Ask the user when a finding requires a product choice, scope change, or major architecture decision.
+5. Apply accepted simplifications, repeat self-review, and rerun this gate until it returns `pass`.
+6. Do not run artifact review until it returns `pass`.
 
 # Artifact Review Gate
 
-1. Run `artifact_quality_reviewer_worker` after `draft.md` has been written or updated and the self-review has passed.
+1. Run `artifact_quality_reviewer_worker` only after the Draft Simplification Gate passes.
 2. Spawn the artifact reviewer only if there is no existing artifact reviewer for this PlanAct run:
    1. spawn using `artifact_quality_reviewer_worker`
-   2. spawn with `fork_context=false`
+   2. spawn with `fork_turns="none"`
    3. remember its `agent_id`
    4. reuse the same reviewer for every Artifact Review Gate rerun in this PlanAct run
    5. do not close or delete the reviewer after it returns a result

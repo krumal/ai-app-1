@@ -14,7 +14,7 @@ description: "[Run only when user is explicitly asking] Brainstorming, Plan, Act
 3. Brainstorming is a pre-plan stage for creating or refining `draft.md`; it does not start implementation.
 4. Standalone Brainstorming, Plan, and Act remain valid and must keep working.
 5. Brainstorming may optionally use the visual companion for batched visual questions; this remains part of Brainstorming, not a separate top-level mode.
-6. Brainstorming and Planning artifacts must pass the `artifact_quality_reviewer_worker` gate before the stage can complete.
+6. Brainstorming and Planning artifacts must pass `plan_simplify_worker` before `artifact_quality_reviewer_worker`.
 
 # Manual invocation rules (required)
 
@@ -40,6 +40,12 @@ description: "[Run only when user is explicitly asking] Brainstorming, Plan, Act
 7. This rule applies in particular to `draft.md` and `plan.md`.
 8. If `draft.md` was created during Brainstorming before the branch existed, commit that `draft.md` first when entering Planning or Plan-Act.
 
+# Codex Thread Title (best effort)
+
+1. In Codex, use the thread-title tool once when entering each stage to name the current thread `<task-label> draft|plan|act` (for example `task-54 draft`); in Plan-Act, update it at every stage transition.
+2. Derive `<task-label>` from the leading `task-<number>` in the task folder name, or use the folder basename when no task ID exists.
+3. Never rename subagent threads, override an explicit user title, or block the workflow when renaming is unavailable or fails.
+
 # Stage selection
 
 1. Brainstorming stage:
@@ -54,12 +60,12 @@ description: "[Run only when user is explicitly asking] Brainstorming, Plan, Act
    1. Trigger when the user provides a task folder path and asks to implement the task end-to-end, for example “давай реализуем эту задачу”.
    2. Action:
       1. if the task definition is not yet stable enough for planning, run `BRAINSTORM.md` first to create or refine `draft.md`
-      2. do not proceed past Brainstorming until `draft.md` has passed the Artifact Review Gate in `BRAINSTORM.md`
+      2. do not proceed past Brainstorming until `draft.md` has passed the Simplification and Artifact Review gates in `BRAINSTORM.md`
       3. ensure the task branch exists before committing or creating planning-stage artifacts
       4. if `draft.md` already exists from Brainstorming, commit it first on the task branch
-      5. otherwise derive the latest agreed task definition from the current chat, write it into `draft.md`, run the Brainstorming Artifact Review Gate, and commit `draft.md` only after reviewer pass
+      5. otherwise derive the latest agreed task definition from the current chat, write it into `draft.md`, run the Brainstorming gates, and commit `draft.md` only after both pass
       6. open `PLAN.md` and follow it to create `plan.md`
-      7. do not commit `plan.md` until it has passed the Planning Artifact Review Gate in `PLAN.md`
+      7. do not commit `plan.md` until it has passed the Planning Simplification and Artifact Review gates in `PLAN.md`
       8. commit the newly created `plan.md`
       9. if planning blocks or requires a user choice, stop before Act
       10. otherwise open `ACT.md` and follow it using the generated `plan.md`
