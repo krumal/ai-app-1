@@ -117,10 +117,10 @@ Use a concise self-contained structure like:
    4. do not use it for abstract product choices with no meaningful visual component
    5. open `VISUAL_COMPANION.md` and follow it
    6. spawn `visual_companion_worker`
-   7. pass one visual batch containing all currently known related visual questions
+   7. pass one visual batch containing all currently known related visual decisions
    8. pass `ui_language` matching the current chat language
-   9. pass the session title, intro, UI brief, question list, completion rule, and return format
-   10. wait only for the worker to return a prepared session with URL and artifact paths
+   9. pass `task_folder`, `ui_language`, `session_title`, `session_intro`, `product_context`, `visual_decisions`, `completion_rule: all_required_decisions_answered`, and `return_format` using the contract in `VISUAL_COMPANION.md`; include relevant UI paths, required states, and 2-3 materially different options per decision
+   10. wait only for the worker to return a prepared session with URL and artifact paths; if it returns `not_visual`, ask the decision in chat; if it returns `error`, report the preparation failure
    11. tell the user where to open the session and what to answer
    12. as orchestrator, run `scripts/wait-for-visual-companion.sh` for that session
    13. use the watcher output as the session answers

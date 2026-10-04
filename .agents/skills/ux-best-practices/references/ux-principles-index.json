@@ -1,0 +1,409 @@
+[
+  {
+    "file_name": "2015-design-principles-for-reducing-cognitive-load.md",
+    "summary": "Cognitive load is the mental effort required to learn and navigate a website. Designers must reduce cognitive load by minimizing choices, eliminating unnecessary elements, and using clear design patterns so users can focus on achieving their goals.",
+    "use_cases": [
+      "E-commerce checkout flows that eliminate unnecessary form fields and pre-populate known information to reduce decision fatigue",
+      "SaaS onboarding experiences that progressively reveal features rather than overwhelming new users with all capabilities upfront",
+      "Mobile banking apps that use iconography with text labels and group related options to help users quickly complete transactions",
+      "Content-heavy websites using clear typography and chunking to help readers scan and understand information efficiently",
+      "Navigation menus that limit top-level options to 5-7 categories with progressive disclosure for subcategories"
+    ]
+  },
+  {
+    "file_name": "2017-designing-with-occams-razor.md",
+    "summary": "Occam's Razor principle applied to design states that simpler solutions are preferable to complex ones. Designers should avoid introducing unnecessary complexity and should ruthlessly edit designs, keeping only elements that add value.",
+    "use_cases": [
+      "Startup MVPs that focus on core functionality only, deferring nice-to-have features until product-market fit is achieved",
+      "B2B software interfaces that strip away visual flourishes and focus on clear, functional layouts for efficiency-focused users",
+      "Mobile app design that cuts non-essential features to keep app size small and load times fast",
+      "Product redesigns where teams audit every element and remove decorative elements that don't serve user goals",
+      "Dashboard interfaces for data analysis tools that show only essential metrics and KPIs on the main view"
+    ]
+  },
+  {
+    "file_name": "2018-the-psychology-of-design.md",
+    "summary": "Psychology fundamentals like Hick's Law, Miller's Law, and Jakob's Law explain how humans perceive and interact with design. Understanding cognitive load, mental models, and chunking helps designers create intuitive products that align with how people naturally think and behave.",
+    "use_cases": [
+      "Video streaming platforms (Netflix) using chunking to organize content into categories, genres, and personalized recommendations",
+      "Progressive disclosure in complex software (Slack) that introduces features gradually based on user proficiency level",
+      "TV remote control redesigns that reduce button count to essential functions, minimizing the cognitive burden for users",
+      "Design system consistency across products so users can transfer knowledge between platforms without relearning",
+      "Healthcare app interfaces that use mental models from physical paperwork (checkboxes, signatures) to feel familiar to older users"
+    ]
+  },
+  {
+    "file_name": "2020-peak-end-rule.md",
+    "summary": "People judge experiences based on the most emotionally intense moment (peak) and the final moment (end), not the average of all moments. Designers should focus on creating positive peaks and strong endings to shape overall perception of the experience.",
+    "use_cases": [
+      "Email marketing confirmation screens (Mailchimp) that celebrate user success with delightful animations and positive feedback",
+      "Customer support ticket resolution where the final interaction includes a personalized thank you and summary to end on a positive note",
+      "Fitness app workout completions that show achievement animations and streak metrics to create a sense of accomplishment",
+      "Ride-sharing apps (Uber) that provide real-time progress updates during waits to reduce anxiety during a low emotional point",
+      "Error recovery experiences (404 pages) that use humor and helpful redirects to turn frustration into a brand-building moment"
+    ]
+  },
+  {
+    "file_name": "2020-ux-psychology-google-search.md",
+    "summary": "Google Search exemplifies UX psychology principles including Hick's Law, chunking, and performance optimization. Its minimalist landing page eliminates friction, search suggestions reduce cognitive load, and fast results delivery maintain user focus.",
+    "use_cases": [
+      "Internal company search tools that follow Google's pattern of a single search input with autocomplete to help employees find information quickly",
+      "E-commerce product search that shows results in chunked, scannable format with clear visual hierarchy to help users evaluate options",
+      "Documentation site search that prioritizes performance and shows relevant snippets upfront rather than requiring users to click through",
+      "Job board filters that reveal additional search options only after an initial query is entered to avoid choice overload",
+      "Customer support knowledge base that provides instant autocomplete suggestions based on common questions to reduce typing effort"
+    ]
+  },
+  {
+    "file_name": "2024-familiar-vs-novel.md",
+    "summary": "Familiarity through consistent design patterns reduces user friction and enables knowledge transfer between products. However, novel design is valuable for competitive differentiation, disruptive innovation, and memorable experiences when grounded in user research.",
+    "use_cases": [
+      "E-commerce sites using standard cart and checkout patterns so customers can buy immediately without learning a new interface",
+      "Innovative browser (Arc) breaking standard patterns with sidebar navigation to differentiate from competitors and appeal to power users",
+      "Interactive storytelling websites using novel scroll-based interactions to create immersive, memorable experiences",
+      "AI-powered search using conversational interfaces instead of traditional link listings to disrupt established patterns",
+      "Enterprise software that maintains familiar elements while adding novel AI-assisted workflows to ease adoption while providing new capabilities"
+    ]
+  },
+  {
+    "file_name": "2024-onboarding-for-active-users.md",
+    "summary": "The Paradox of the Active User states that users dive into software immediately without reading instructions. Effective onboarding should accommodate this behavior through contextual guidance like tooltips, progressive disclosure, and getting-started templates rather than blocking product tours.",
+    "use_cases": [
+      "SaaS products using in-product tooltips that appear contextually only when users hover over unfamiliar features",
+      "Productivity apps (Slack, Notion) implementing progressive onboarding that unlocks features gradually as users complete core tasks",
+      "Mobile apps providing optional 'Getting Started' templates that users can reference anytime without forcing initial setup",
+      "Complex analytics platforms using guided examples in the interface so users learn by doing rather than from external documentation",
+      "Collaboration tools that show feature hints on first-use of specific functionality rather than a lengthy upfront tutorial"
+    ]
+  },
+  {
+    "file_name": "2024-teslers-law.md",
+    "summary": "Tesler's Law states that every process has irreducible complexity that must be handled either by users or the system. Designers should absorb as much complexity as possible through smart defaults, automation, and progressive disclosure to reduce user burden.",
+    "use_cases": [
+      "Email clients (Gmail) that auto-populate sender information and suggest recipients based on history, shifting complexity from user to system",
+      "E-commerce checkout that auto-fills shipping address from billing, and one-click payment options (Apple Pay) eliminate repetitive data entry",
+      "Retail apps (Amazon Go) using computer vision and machine learning to eliminate checkout friction entirely for customers",
+      "Data analytics tools using natural language queries so non-technical users can request insights without learning SQL",
+      "Bank account transfers that hide complexity of routing numbers and account verification behind simple account-to-account transfers"
+    ]
+  },
+  {
+    "file_name": "aesthetic-usability-effect.md",
+    "summary": "Users perceive aesthetically pleasing designs as more usable, even when actual usability is the same. Beautiful design creates positive emotional responses and users are more tolerant of minor usability issues in visually appealing interfaces.",
+    "use_cases": [
+      "Financial dashboard interfaces where attractive visualizations and color schemes make complex data feel more approachable and trustworthy",
+      "Luxury e-commerce sites using premium typography and high-quality imagery to justify higher prices and create perceived quality",
+      "Enterprise software redesigns using modern aesthetics to make traditionally utilitarian tools feel more pleasant to use daily",
+      "Health and wellness apps using calming colors and refined design to create emotional connection and encourage habit formation",
+      "Billing and subscription management interfaces using clean design to make payment processes feel less transactional and more seamless"
+    ]
+  },
+  {
+    "file_name": "choice-overload.md",
+    "summary": "The tendency for people to get overwhelmed when presented with a large number of options, which can negatively impact decision-making ability and overall user experience. Too many choices can lead to decision paralysis and reduced satisfaction.",
+    "use_cases": [
+      "E-commerce product filtering: Reduce initial options shown by implementing smart filters and search, then showing side-by-side comparisons of pre-filtered products",
+      "SaaS pricing pages: Limit visible pricing tiers to 3-4 options with clear feature comparisons, using recommendations or highlighted 'most popular' tiers",
+      "Mobile app onboarding: Present features progressively rather than showing all options at once, allowing users to explore capabilities at their own pace",
+      "Food delivery apps: Implement category-based navigation and sorting filters upfront to narrow choices before presenting restaurants",
+      "Insurance or financial service forms: Break multi-option decisions into sequential steps, presenting related choices together with clear comparison tools"
+    ]
+  },
+  {
+    "file_name": "chunking.md",
+    "summary": "A process where individual pieces of information are broken down and grouped together in meaningful wholes, enabling users to process information more quickly and understand relationships between content.",
+    "use_cases": [
+      "Documentation and help sites: Organize lengthy guides into clearly separated sections with visual hierarchy for quick scanning",
+      "Form design: Group related fields into logical sections (billing info, shipping info, payment) with visual separators and headers",
+      "Dashboard layouts: Organize related metrics and widgets into distinct cards or panels by business function",
+      "Navigation menus: Structure site navigation by logical categories rather than presenting all links flat",
+      "Email newsletter design: Break newsletter content into clearly delineated sections with headers and visual separation"
+    ]
+  },
+  {
+    "file_name": "cognitive-bias.md",
+    "summary": "Systematic errors in thinking that influence perception and decision-making, often caused by mental shortcuts (heuristics) that conserve mental energy. Understanding cognitive biases helps designers recognize and mitigate their impact on user decisions.",
+    "use_cases": [
+      "Checkout design: Address confirmation bias by showing a clear order summary that forces users to review their choices",
+      "Recommendation engines: Counter anchoring bias by presenting price ranges and options around the recommended product",
+      "A/B testing platforms: Help users avoid recency bias by showing historical performance data alongside recent metrics",
+      "Medical apps or health trackers: Design visualizations that counter outcome bias by displaying both successes and failures",
+      "Job listing or talent marketplace: Counter availability bias by ensuring diverse candidates are prominently displayed"
+    ]
+  },
+  {
+    "file_name": "doherty-threshold.md",
+    "summary": "Productivity and user engagement increase significantly when a computer responds to user actions in under 400 milliseconds, creating an 'addictive' quality where neither user nor system has to wait on the other.",
+    "use_cases": [
+      "Search functionality: Implement autocomplete suggestions that appear within 200-300ms of user typing",
+      "Mobile app interactions: Ensure button taps and navigation transitions complete within 400ms using skeleton screens",
+      "Real-time data dashboards: Update charts and metrics with latency under 400ms when users interact with filters",
+      "Form validation: Provide real-time validation feedback as users complete fields (within 300ms)",
+      "Chat and messaging apps: Ensure messages appear in the conversation thread within 400ms with typing indicators"
+    ]
+  },
+  {
+    "file_name": "fittss-law.md",
+    "summary": "The time required to acquire a target is a function of both the distance to that target and its size. Larger targets that are closer to the user's current focus area reduce selection time and error rates.",
+    "use_cases": [
+      "Mobile button design: Make primary action buttons significantly larger and place them at the bottom of the screen where thumbs naturally rest",
+      "Toolbar positioning: Place frequently-used tools in immediately accessible areas of the interface and increase their size",
+      "Hover target areas: Expand clickable zones for interactive elements beyond their visual boundaries",
+      "Modal dialogs: Position the primary action button in close proximity to where the user's attention is focused",
+      "Keyboard shortcuts and accessibility: Provide larger touch targets for users with reduced dexterity"
+    ]
+  },
+  {
+    "file_name": "flow.md",
+    "summary": "The optimal mental state where a person is fully immersed in an activity with energized focus, complete involvement, and enjoyment, occurring when task difficulty is balanced with user skill level.",
+    "use_cases": [
+      "Video game design: Gradually increase challenge as players improve with immediate feedback on actions",
+      "Learning management systems: Adapt course difficulty based on user performance with instant feedback on quiz answers",
+      "Creative tools (design, music, video): Minimize tool complexity by progressively revealing advanced features",
+      "Fitness apps: Progressively adjust workout intensity based on user fitness level with immediate performance feedback",
+      "Project management tools: Design workflows that match team expertise with task complexity"
+    ]
+  },
+  {
+    "file_name": "goal-gradient-effect.md",
+    "summary": "The tendency to approach a goal increases with proximity to the goal. Users work faster as they progress toward task completion, and showing artificial progress motivates task completion.",
+    "use_cases": [
+      "E-commerce checkout flows showing progress bars to reduce cart abandonment at final steps",
+      "SaaS onboarding showing completion percentage to encourage users to finish setup and unlock features",
+      "Mobile app loyalty programs with visual progress toward rewards milestones to boost user engagement",
+      "Course platforms displaying chapter completion progress to maintain student motivation",
+      "Project management tools showing sprint burndown charts to keep team momentum toward deadlines"
+    ]
+  },
+  {
+    "file_name": "hicks-law.md",
+    "summary": "The time it takes to make a decision increases with the number and complexity of choices. Minimizing options and breaking complex tasks into steps reduces cognitive load and decision time.",
+    "use_cases": [
+      "E-commerce product filters that progressively narrow options instead of showing all at once",
+      "Bank or insurance quote flows using step-by-step wizards instead of one massive form",
+      "Mobile app onboarding that introduces features gradually rather than overwhelming new users",
+      "Search interfaces like Google's minimalist design that eliminate distracting choices",
+      "Subscription plans showing 3 tiers instead of 10+ options to reduce decision paralysis"
+    ]
+  },
+  {
+    "file_name": "jakobs-law.md",
+    "summary": "Users spend most time on other sites and expect new sites to work like familiar ones. Leveraging existing mental models creates superior user experiences by reducing learning curves.",
+    "use_cases": [
+      "SaaS applications using standard UI patterns (buttons, menus, forms) that match competitor apps",
+      "App redesigns offering gradual transitions so users can preview new designs and revert if needed",
+      "Enterprise software maintaining familiar spreadsheet-like interfaces rather than radical redesigns",
+      "Mobile banking apps using standard iOS/Android navigation patterns instead of custom controls",
+      "E-learning platforms adopting conventional page layout conventions from other educational websites"
+    ]
+  },
+  {
+    "file_name": "law-of-common-region.md",
+    "summary": "Elements tend to be perceived into groups if they share an area with a clearly defined boundary. Using borders or backgrounds creates visual structure and helps users understand relationships between elements.",
+    "use_cases": [
+      "Dashboard designs using card containers to group related metrics and analytics together",
+      "Form layouts with bordered sections to logically separate billing, shipping, and payment information",
+      "Email templates using background colors to distinguish product recommendations from order details",
+      "Project management tools using colored regions to separate different project statuses",
+      "Admin panels organizing user settings into clearly bounded sections for permissions and account info"
+    ]
+  },
+  {
+    "file_name": "law-of-proximity.md",
+    "summary": "Objects that are near or proximate to each other tend to be grouped together. Proximity helps establish relationships and helps users organize information faster and more efficiently.",
+    "use_cases": [
+      "Search results pages using spacing to group title, URL, and description as a single result unit",
+      "Form designs clustering related fields together (address, city, zip) to show they belong together",
+      "Navigation menus grouping related links close together to indicate shared categories",
+      "Social media feeds using whitespace to separate individual posts while grouping comments with posts",
+      "Data table designs using row spacing to group related data cells and separate from other rows"
+    ]
+  },
+  {
+    "file_name": "law-of-prägnanz.md",
+    "summary": "People will perceive and interpret ambiguous or complex images as the simplest form possible, because it requires the least cognitive effort. Simple, clear designs are processed faster and remembered better.",
+    "use_cases": [
+      "Logo design using simple geometric shapes that are easily recognizable and memorable",
+      "Icon systems using minimal, distinct shapes that users can quickly interpret",
+      "Data visualization using clean, simple chart types rather than complex multi-dimensional graphics",
+      "Navigation patterns using clear, predictable layouts that users can understand at a glance",
+      "Loading states using simple progress indicators rather than complex animations"
+    ]
+  },
+  {
+    "file_name": "law-of-similarity.md",
+    "summary": "The human eye perceives similar elements as a complete group or picture, even when separated. Using consistent visual properties signals that elements share functionality or meaning.",
+    "use_cases": [
+      "E-commerce sites using consistent button colors to show clickable elements versus static text",
+      "Navigation systems styling active links in one color and inactive links differently",
+      "Dashboard designs using consistent icon styles for similar action types (delete, edit, settings)",
+      "Financial dashboards using consistent color coding for gains (green) and losses (red) across reports",
+      "Mobile app using consistent badge styling to show notification counts across multiple screens"
+    ]
+  },
+  {
+    "file_name": "law-of-uniform-connectedness.md",
+    "summary": "Elements that are visually connected are perceived as more related than elements with no connection. Group similar functions using colors, lines, frames, or other visual connectors to emphasize relationships.",
+    "use_cases": [
+      "E-commerce product pages grouping related items (color, size options) with visual borders",
+      "Dashboard analytics tools connecting related metrics with lines or color coding to show data correlations",
+      "Mobile app navigation grouping related features in card containers to visually distinguish feature sections",
+      "Form design connecting related fields with visual borders or background colors to reduce cognitive load",
+      "Search results pages using consistent visual frames around different result types (news, images, videos)"
+    ]
+  },
+  {
+    "file_name": "millers-law.md",
+    "summary": "The average person can only keep 7 (plus or minus 2) items in their working memory. Information should be organized into smaller chunks to help users process, understand, and memorize content more easily.",
+    "use_cases": [
+      "Navigation menu design limiting top-level categories to 5-9 items to prevent cognitive overload",
+      "Form design breaking multi-step processes into 5-7 input fields per screen to maintain user focus",
+      "E-learning platforms chunking course content into bite-sized modules with 5-7 key concepts per lesson",
+      "Product comparison tables grouping features into 6-8 categories rather than showing dozens of attributes",
+      "Streaming service interfaces organizing content into 5-7 personalized rows instead of infinite scrolling"
+    ]
+  },
+  {
+    "file_name": "occams-razor.md",
+    "summary": "Among competing hypotheses that predict equally well, the one with the fewest assumptions should be selected. Reduce complexity by analyzing each element and removing as many as possible without compromising functionality.",
+    "use_cases": [
+      "SaaS onboarding flows eliminating unnecessary steps and asking only for essential information upfront",
+      "Settings pages removing rarely-used options and grouping common settings under intuitive categories",
+      "E-commerce checkout process removing unnecessary form fields and optional steps to decrease cart abandonment",
+      "Mobile app design reducing feature sets to core functionality to improve performance and reduce confusion",
+      "Search interfaces simplifying advanced filters and making basic search the primary option"
+    ]
+  },
+  {
+    "file_name": "paradox-of-the-active-user.md",
+    "summary": "Users never read manuals but start using software immediately. Guidance should be made accessible throughout the product experience and designed to fit within the context of use rather than requiring upfront documentation.",
+    "use_cases": [
+      "Product onboarding using contextual tooltips that appear when users hover or attempt specific actions",
+      "Help systems providing right-click context menus and inline hints that guide users without interrupting workflow",
+      "Software interfaces using progressive disclosure to reveal advanced features gradually",
+      "Mobile apps implementing interactive tutorials that activate during first-use attempts at specific features",
+      "SaaS platforms embedding task-specific guidance directly in the UI"
+    ]
+  },
+  {
+    "file_name": "pareto-principle.md",
+    "summary": "For many events, roughly 80% of the effects come from 20% of the causes. Focus the majority of effort on the areas that will bring the largest benefits to the most users.",
+    "use_cases": [
+      "Feature prioritization focusing development resources on the 20% of features that drive 80% of user engagement",
+      "Customer support systems identifying the 20% of common issues that account for 80% of support tickets",
+      "Performance optimization identifying the 20% of slow pages that impact 80% of user frustration",
+      "Product roadmap development concentrating on high-impact user segments and use cases",
+      "A/B testing prioritizing changes to the 20% of user touchpoints that influence 80% of conversion rate"
+    ]
+  },
+  {
+    "file_name": "parkinsons-law.md",
+    "summary": "Any task will inflate until all of the available time is spent. Limiting the time to complete a task to user expectations improves experience, and reducing actual duration below expected time is achieved through autofill and efficiency features.",
+    "use_cases": [
+      "Checkout process using autofill and payment auto-detection to complete purchases quickly",
+      "Booking systems setting explicit time limits for task completion and providing pre-filled information",
+      "Job application interfaces constraining form time limits and auto-saving progress to encourage completion",
+      "Meeting scheduling tools automatically suggesting optimal times and pre-filling attendee information",
+      "Report generation tools setting clear completion timeframes with progress indicators"
+    ]
+  },
+  {
+    "file_name": "peak-end-rule.md",
+    "summary": "People judge an experience largely based on how they felt at its peak and at its end, rather than the total sum or average of every moment. Designers should focus on delighting users during the most intense and final moments.",
+    "use_cases": [
+      "E-commerce checkout flow: Design the final confirmation screen with celebratory visuals and messaging",
+      "Customer support interactions: End support tickets with a positive resolution message and helpful follow-up resources",
+      "Mobile app onboarding: Create memorable first-run experiences with engaging animations and clear success moments",
+      "Customer service chatbot: Add delightful moments when resolving issues and conclude conversations encouragingly",
+      "SaaS product trials: Highlight key feature achievements during trial periods with compelling upgrade offers"
+    ]
+  },
+  {
+    "file_name": "postels-law.md",
+    "summary": "Be liberal in what you accept from users and conservative in what you send. Design resilient systems by anticipating varied user input and providing clear, flexible feedback while maintaining strict output standards.",
+    "use_cases": [
+      "Form validation: Accept multiple date formats and automatically normalize them while providing clear feedback",
+      "Search functionality: Forgive minor spelling mistakes, ignore extra spaces, and interpret natural language queries",
+      "User registration: Allow variations in name formatting and email variations while maintaining consistent data standards",
+      "Payment processing: Accept card information from various international formats while returning standardized confirmations",
+      "File upload systems: Accept multiple file formats with graceful degradation and clear messaging about limitations"
+    ]
+  },
+  {
+    "file_name": "selective-attention.md",
+    "summary": "Users focus attention only on a subset of stimuli relevant to their goals, filtering out irrelevant information. Designers must guide attention, prevent distraction, and avoid banner blindness.",
+    "use_cases": [
+      "Dashboard design: Highlight key metrics with color, size, and whitespace while relegating secondary information",
+      "E-commerce product pages: Use visual hierarchy to emphasize product images and CTAs over promotional banners",
+      "SaaS tool interfaces: Place critical warnings and notifications in prominent areas with distinct styling",
+      "News feeds and content platforms: Differentiate sponsored content visually from organic content",
+      "Mobile app notifications: Design with distinct visual treatment to capture attention when users multitask"
+    ]
+  },
+  {
+    "file_name": "serial-position-effect.md",
+    "summary": "Users best remember the first and last items in a series, while middle items are often forgotten. Strategic positioning of key actions and information at the start and end improves memorization and usability.",
+    "use_cases": [
+      "Navigation menu design: Place the most important actions at the beginning and end of menus",
+      "Pricing tier comparison: Position the recommended plan at the beginning or end of the comparison matrix",
+      "Multi-step forms: Start with the most important required fields and conclude with less critical optional information",
+      "Product feature lists: Lead with flagship features and conclude with differentiators",
+      "Call-to-action placement: Position primary CTAs at the start and reinforce with secondary CTAs at the end"
+    ]
+  },
+  {
+    "file_name": "teslers-law.md",
+    "summary": "Tesler's Law states that for any system there is a certain amount of complexity which cannot be reduced. The burden of this irreducible complexity must be managed by either the system or the user.",
+    "use_cases": [
+      "E-commerce checkout flow: Handle complex validation and security checks behind the scenes",
+      "Mobile banking app: Take on the burden of complex financial calculations and compliance requirements",
+      "SaaS project management tool: Automate common fields and dependencies while allowing power users advanced options",
+      "Subscription management portal: Hide billing and tax complexity by automatically calculating costs",
+      "Medical appointment scheduling: Manage provider availability and insurance verification without overwhelming patients"
+    ]
+  },
+  {
+    "file_name": "von-restorff-effect.md",
+    "summary": "When multiple similar objects are present, the one that differs from the rest is most likely to be remembered. Making items visually distinctive improves their recall and attention.",
+    "use_cases": [
+      "E-commerce product pages: Highlight the 'Add to Cart' button with contrasting color and size",
+      "SaaS pricing pages: Make the recommended plan visually distinctive through unique styling or badges",
+      "Mobile banking app: Use distinct visual styling for alerts about unusual transactions or security warnings",
+      "Call center software: Make critical action buttons visually isolated for quick identification",
+      "Email marketing dashboard: Highlight top-performing campaigns with unique visual treatment"
+    ]
+  },
+  {
+    "file_name": "working-memory.md",
+    "summary": "Working memory is a cognitive system that temporarily holds and manipulates information, limited to 4-7 chunks with each chunk fading after 20-30 seconds. Designers must minimize cognitive load by supporting recognition over recall.",
+    "use_cases": [
+      "Multi-step form workflows: Break long forms into smaller pages and auto-populate previously entered information",
+      "Data comparison tools: Create persistent comparison tables that remain visible while users browse options",
+      "Travel booking platforms: Save user preferences and search criteria across sessions",
+      "Online learning platforms: Maintain breadcrumb history showing which lessons have been viewed",
+      "Healthcare patient portals: Pre-populate appointment details, medication lists, and previous test results"
+    ]
+  },
+  {
+    "file_name": "zeigarnik-effect.md",
+    "summary": "People remember uncompleted or interrupted tasks better than completed tasks. Creating a sense of incompleteness and showing progress toward goals motivates users to continue and complete tasks.",
+    "use_cases": [
+      "Fitness app with workout programs: Show progress bars for multi-week training plans with milestone celebrations",
+      "Educational platform: Break courses into visible modules with progress tracking",
+      "Habit-tracking app: Display streaks of completed daily habits and show gaps when habits are missed",
+      "Game or loyalty platform: Use level systems where users can see what's needed to reach the next level",
+      "Content marketing newsletter: End articles with teasers for next week's topic to encourage return visits"
+    ]
+  },
+  {
+    "file_name": "ux-waiting-states-checklist.md",
+    "summary": "A comprehensive 10-category checklist for auditing waiting state UX, covering progressive value delivery, heartbeat indicators, time estimation, process explanation, sunk cost visibility, background processing, interruptibility, graceful degradation, completion celebration, and anxiety reduction.",
+    "use_cases": [
+      "AI chat applications: Implement streaming responses with typing indicators and allow users to stop generation mid-process",
+      "File upload interfaces: Show bytes transferred, allow background uploads with notifications, and celebrate successful completion",
+      "Search engines and data tools: Stream partial results as found, show 'Checking N sources' counters, and provide early exit options",
+      "Build and deployment pipelines: Display live logs with heartbeat updates, time estimates, and clear phase indicators",
+      "Long-running reports or exports: Enable background processing, show progress percentage, and deliver completion notifications"
+    ]
+  }
+]

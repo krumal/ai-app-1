@@ -44,8 +44,8 @@ function sessionData() {
     session_title: 'PlanAct Visual Companion',
     session_intro: 'Waiting for session.json to be written.',
     ui_language: 'en',
-    questions: [],
-    completion_rule: 'all_required_answered'
+    decisions: [],
+    completion_rule: 'all_required_decisions_answered'
   });
 }
 
@@ -53,29 +53,19 @@ function answersData() {
   return readJson(ANSWERS_FILE, {});
 }
 
-function answerIsMeaningful(question, answer) {
+function answerIsMeaningful(answer) {
   const selected = Array.isArray(answer.selected_option_ids) ? answer.selected_option_ids : [];
-  const note = typeof answer.note === 'string' ? answer.note.trim() : '';
-  if (question.type === 'text_only') {
-    return note.length > 0;
-  }
-  if (selected.length > 0) {
-    return true;
-  }
-  return note.length > 0;
+  return selected.length > 0;
 }
 
 function buildStatus(session, answers) {
-  const requiredQuestions = session.questions.filter((question) => question.required !== false);
-  const submittedRequiredCount = requiredQuestions.filter((question) => {
-    return answers[question.id] && answerIsMeaningful(question, answers[question.id]);
-  }).length;
-
+  const requiredDecisions = session.decisions.filter((decision) => decision.required !== false);
+  const submittedRequiredCount = requiredDecisions.filter((decision) => answers[decision.id] && answerIsMeaningful(answers[decision.id])).length;
   return {
-    completion_rule: session.completion_rule || 'all_required_answered',
-    required_count: requiredQuestions.length,
+    completion_rule: session.completion_rule || 'all_required_decisions_answered',
+    required_count: requiredDecisions.length,
     submitted_required_count: submittedRequiredCount,
-    completed: submittedRequiredCount === requiredQuestions.length,
+    completed: submittedRequiredCount === requiredDecisions.length,
     updated_at: new Date().toISOString()
   };
 }
@@ -95,6 +85,26 @@ function sendHtml(res) {
   res.end(html);
 }
 
+function sendPreview(req, res) {
+  const requestUrl = new URL(req.url, 'http://localhost');
+  const fileName = decodeURIComponent(requestUrl.pathname.slice('/content/'.length));
+  if (!fileName || fileName !== path.basename(fileName) || path.extname(fileName).toLowerCase() !== '.html') {
+    sendJson(res, 400, { error: 'Invalid preview file' });
+    return;
+  }
+
+  const filePath = path.join(CONTENT_DIR, fileName);
+  try {
+    if (!fs.statSync(filePath).isFile()) {
+      throw new Error('Not a file');
+    }
+    res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
+    fs.createReadStream(filePath).pipe(res);
+  } catch (error) {
+    sendJson(res, 404, { error: 'Preview not found' });
+  }
+}
+
 function collectBody(req) {
   return new Promise((resolve, reject) => {
     let body = '';
@@ -107,23 +117,23 @@ function collectBody(req) {
 }
 
 function validateSubmission(session, payload) {
-  const question = session.questions.find((item) => item.id === payload.question_id);
-  if (!question) {
-    return { ok: false, error: 'Unknown question_id' };
+  const decision = session.decisions.find((item) => item.id === payload.decision_id);
+  if (!decision) {
+    return { ok: false, error: 'Unknown decision_id' };
   }
 
   const selectedOptionIds = Array.isArray(payload.selected_option_ids) ? payload.selected_option_ids : [];
   const note = typeof payload.note === 'string' ? payload.note : '';
-  const knownOptionIds = new Set((question.options || []).map((option) => option.id));
+  const knownOptionIds = new Set((decision.options || []).map((option) => option.id));
 
   for (const optionId of selectedOptionIds) {
     if (!knownOptionIds.has(optionId)) {
-      return { ok: false, error: 'Unknown option id for question ' + question.id };
+      return { ok: false, error: 'Unknown option id for decision ' + decision.id };
     }
   }
 
-  if (question.type !== 'multi_choice' && selectedOptionIds.length > 1) {
-    return { ok: false, error: 'Only one option can be selected for question ' + question.id };
+  if (decision.type !== 'multi_choice' && selectedOptionIds.length > 1) {
+    return { ok: false, error: 'Only one option can be selected for decision ' + decision.id };
   }
 
   const answer = {
@@ -132,16 +142,21 @@ function validateSubmission(session, payload) {
     submitted_at: new Date().toISOString()
   };
 
-  if (question.required !== false && !answerIsMeaningful(question, answer)) {
-    return { ok: false, error: 'Required question is missing an answer' };
+  if (!answerIsMeaningful(answer)) {
+    return { ok: false, error: 'Decision is missing a selected option' };
   }
 
-  return { ok: true, question, answer };
+  return { ok: true, decision, answer };
 }
 
 const server = http.createServer(async (req, res) => {
   if (req.method === 'GET' && req.url === '/') {
     sendHtml(res);
+    return;
+  }
+
+  if (req.method === 'GET' && req.url.startsWith('/content/')) {
+    sendPreview(req, res);
     return;
   }
 
@@ -164,7 +179,7 @@ const server = http.createServer(async (req, res) => {
     return;
   }
 
-  if (req.method === 'POST' && req.url === '/api/submit-answer') {
+  if (req.method === 'POST' && req.url === '/api/submit-decision') {
     try {
       const body = await collectBody(req);
       const payload = JSON.parse(body || '{}');
@@ -177,12 +192,11 @@ const server = http.createServer(async (req, res) => {
         return;
       }
 
-      answers[validation.question.id] = validation.answer;
+      answers[validation.decision.id] = validation.answer;
       writeJson(ANSWERS_FILE, answers);
-
       appendEvent({
-        type: 'answer_submitted',
-        question_id: validation.question.id,
+        type: 'decision_submitted',
+        decision_id: validation.decision.id,
         selected_option_ids: validation.answer.selected_option_ids,
         note: validation.answer.note,
         submitted_at: validation.answer.submitted_at
@@ -190,7 +204,6 @@ const server = http.createServer(async (req, res) => {
 
       const status = buildStatus(session, answers);
       writeJson(STATUS_FILE, status);
-
       if (status.completed) {
         writeJson(COMPLETED_FILE, {
           completed: true,

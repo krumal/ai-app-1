@@ -47,6 +47,8 @@ if [[ -z "$TASK_DIR" ]]; then
   exit 1
 fi
 
+mkdir -p "$TASK_DIR"
+
 if [[ -z "$URL_HOST" ]]; then
   if [[ "$BIND_HOST" == "127.0.0.1" || "$BIND_HOST" == "localhost" ]]; then
     URL_HOST="localhost"

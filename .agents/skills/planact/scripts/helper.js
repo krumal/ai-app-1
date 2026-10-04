@@ -12,25 +12,29 @@
       required: 'Required',
       optional: 'Optional',
       optionalNote: 'Optional note',
-      submit: 'Submit answer',
-      submitted: 'Submitted',
+      select: 'Select this variant',
+      selected: 'Selected',
+      submit: 'Submit decision',
+      submitted: 'Decision submitted',
       pending: 'Not submitted yet',
       progress: 'Progress',
-      complete: 'All required questions answered. You can return to the chat.',
-      incomplete: 'Answer all required questions to complete this visual step.',
+      complete: 'All required visual decisions are submitted. You can return to the chat.',
+      incomplete: 'Submit every required visual decision to complete this step.',
       errorPrefix: 'Error'
     },
     ru: {
       eyebrow: 'PlanAct Visual Companion',
-      required: 'Обязательный',
-      optional: 'Необязательный',
+      required: 'Обязательное решение',
+      optional: 'Необязательное решение',
       optionalNote: 'Комментарий',
-      submit: 'Сохранить ответ',
-      submitted: 'Ответ сохранён',
-      pending: 'Ответ ещё не сохранён',
+      select: 'Выбрать этот вариант',
+      selected: 'Вариант выбран',
+      submit: 'Сохранить решение',
+      submitted: 'Решение сохранено',
+      pending: 'Решение ещё не сохранено',
       progress: 'Прогресс',
-      complete: 'На все обязательные вопросы ответили. Можно возвращаться в чат.',
-      incomplete: 'Ответьте на все обязательные вопросы, чтобы завершить визуальный этап.',
+      complete: 'Все обязательные визуальные решения сохранены. Можно возвращаться в чат.',
+      incomplete: 'Сохраните все обязательные визуальные решения, чтобы завершить этот этап.',
       errorPrefix: 'Ошибка'
     }
   };
@@ -53,58 +57,50 @@
       .replace(/'/g, '&#39;');
   }
 
-  function getQuestionById(questionId) {
-    return state.session.questions.find((question) => question.id === questionId);
+  function getDecisionById(decisionId) {
+    return state.session.decisions.find((decision) => decision.id === decisionId);
   }
 
-  function ensureDraft(question) {
-    if (!state.drafts[question.id]) {
-      const saved = state.answers[question.id] || {};
-      state.drafts[question.id] = {
+  function ensureDraft(decision) {
+    if (!state.drafts[decision.id]) {
+      const saved = state.answers[decision.id] || {};
+      state.drafts[decision.id] = {
         selected_option_ids: Array.isArray(saved.selected_option_ids) ? saved.selected_option_ids.slice() : [],
         note: typeof saved.note === 'string' ? saved.note : ''
       };
     }
-    return state.drafts[question.id];
+    return state.drafts[decision.id];
   }
 
-  function answerIsMeaningful(question, answer) {
+  function answerIsMeaningful(answer) {
     const selected = Array.isArray(answer.selected_option_ids) ? answer.selected_option_ids : [];
-    const note = String(answer.note || '').trim();
-    if (question.type === 'text_only') {
-      return note.length > 0;
-    }
-    if (selected.length > 0) {
-      return true;
-    }
-    return note.length > 0;
+    return selected.length > 0;
   }
 
-  function isSubmitted(question) {
-    const answer = state.answers[question.id];
-    return Boolean(answer && answerIsMeaningful(question, answer));
+  function isSubmitted(decision) {
+    const answer = state.answers[decision.id];
+    return Boolean(answer && answerIsMeaningful(answer));
   }
 
   function completionStatus() {
-    const requiredQuestions = state.session.questions.filter((question) => question.required !== false);
-    const submittedRequiredCount = requiredQuestions.filter((question) => isSubmitted(question)).length;
+    const requiredDecisions = state.session.decisions.filter((decision) => decision.required !== false);
+    const submittedRequiredCount = requiredDecisions.filter((decision) => isSubmitted(decision)).length;
     return {
-      requiredCount: requiredQuestions.length,
+      requiredCount: requiredDecisions.length,
       submittedRequiredCount,
-      completed: submittedRequiredCount === requiredQuestions.length
+      completed: submittedRequiredCount === requiredDecisions.length
     };
   }
 
-  function optionSelected(questionId, optionId) {
-    const draft = ensureDraft(getQuestionById(questionId));
-    return draft.selected_option_ids.includes(optionId);
+  function optionSelected(decisionId, optionId) {
+    return ensureDraft(getDecisionById(decisionId)).selected_option_ids.includes(optionId);
   }
 
-  function toggleOption(questionId, optionId) {
-    const question = getQuestionById(questionId);
-    const draft = ensureDraft(question);
+  function toggleOption(decisionId, optionId) {
+    const decision = getDecisionById(decisionId);
+    const draft = ensureDraft(decision);
 
-    if (question.type === 'multi_choice') {
+    if (decision.type === 'multi_choice') {
       if (draft.selected_option_ids.includes(optionId)) {
         draft.selected_option_ids = draft.selected_option_ids.filter((item) => item !== optionId);
       } else {
@@ -117,20 +113,18 @@
     render();
   }
 
-  function updateNote(questionId, value) {
-    const draft = ensureDraft(getQuestionById(questionId));
-    draft.note = value;
+  function updateNote(decisionId, value) {
+    ensureDraft(getDecisionById(decisionId)).note = value;
   }
 
-  async function submitQuestion(questionId) {
-    const question = getQuestionById(questionId);
-    const draft = ensureDraft(question);
-
-    const response = await fetch('/api/submit-answer', {
+  async function submitDecision(decisionId) {
+    const decision = getDecisionById(decisionId);
+    const draft = ensureDraft(decision);
+    const response = await fetch('/api/submit-decision', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        question_id: questionId,
+        decision_id: decisionId,
         selected_option_ids: draft.selected_option_ids,
         note: draft.note
       })
@@ -146,39 +140,48 @@
     render();
   }
 
-  function renderQuestion(question) {
-    const draft = ensureDraft(question);
-    const submitted = isSubmitted(question);
+  function renderOption(decision, option) {
+    const selected = optionSelected(decision.id, option.id);
+    const previewUrl = '/content/' + encodeURIComponent(option.preview_file);
+    return [
+      '<article class="option-card' + (selected ? ' selected' : '') + '">',
+      '<div class="mockup-wrap">',
+      '<iframe class="mockup-frame" src="' + previewUrl + '" title="' + escapeHtml(option.label) + '" loading="lazy" sandbox></iframe>',
+      '</div>',
+      '<button type="button" class="option-select" aria-pressed="' + String(selected) + '" onclick="PlanActVC.toggleOption(\'' + escapeHtml(decision.id) + '\', \'' + escapeHtml(option.id) + '\')">',
+      '<span class="option-label">' + escapeHtml(option.label) + '</span>',
+      option.description ? '<span class="option-description">' + escapeHtml(option.description) + '</span>' : '',
+      '<span class="option-action">' + escapeHtml(selected ? t('selected') : t('select')) + '</span>',
+      '</button>',
+      '</article>'
+    ].join('');
+  }
 
-    const optionsHtml = (question.options || []).map((option) => {
-      const selected = optionSelected(question.id, option.id);
-      return [
-        '<button type="button" class="option' + (selected ? ' selected' : '') + '" onclick="PlanActVC.toggleOption(\'' + escapeHtml(question.id) + '\', \'' + escapeHtml(option.id) + '\')">',
-        '<div class="option-label">' + escapeHtml(option.label) + '</div>',
-        option.description ? '<p class="option-description">' + escapeHtml(option.description) + '</p>' : '',
-        '</button>'
-      ].join('');
-    }).join('');
+  function renderDecision(decision) {
+    const draft = ensureDraft(decision);
+    const submitted = isSubmitted(decision);
+    const canSubmit = draft.selected_option_ids.length > 0;
+    const optionsHtml = (decision.options || []).map((option) => renderOption(decision, option)).join('');
 
     return [
-      '<section class="question">',
-      '<div class="question-head">',
+      '<section class="decision">',
+      '<div class="decision-head">',
       '<div>',
-      '<h2 class="question-title">' + escapeHtml(question.title) + '</h2>',
-      question.description ? '<p class="question-description">' + escapeHtml(question.description) + '</p>' : '',
+      '<h2 class="decision-title">' + escapeHtml(decision.title) + '</h2>',
+      decision.description ? '<p class="decision-description">' + escapeHtml(decision.description) + '</p>' : '',
       '</div>',
-      '<span class="badge' + (question.required === false ? ' optional' : '') + '">' + (question.required === false ? t('optional') : t('required')) + '</span>',
+      '<span class="badge' + (decision.required === false ? ' optional' : '') + '">' + (decision.required === false ? t('optional') : t('required')) + '</span>',
       '</div>',
-      optionsHtml ? '<div class="options">' + optionsHtml + '</div>' : '',
-      question.allow_free_text ? [
+      '<div class="options">' + optionsHtml + '</div>',
+      decision.allow_free_text ? [
         '<div class="note-wrap">',
-        '<label class="note-label" for="note-' + escapeHtml(question.id) + '">' + t('optionalNote') + '</label>',
-        '<textarea id="note-' + escapeHtml(question.id) + '" class="note-input" oninput="PlanActVC.updateNote(\'' + escapeHtml(question.id) + '\', this.value)">' + escapeHtml(draft.note) + '</textarea>',
+        '<label class="note-label" for="note-' + escapeHtml(decision.id) + '">' + t('optionalNote') + '</label>',
+        '<textarea id="note-' + escapeHtml(decision.id) + '" class="note-input" oninput="PlanActVC.updateNote(\'' + escapeHtml(decision.id) + '\', this.value)">' + escapeHtml(draft.note) + '</textarea>',
         '</div>'
       ].join('') : '',
-      '<div class="question-actions">',
+      '<div class="decision-actions">',
       '<span class="answer-state' + (submitted ? ' saved' : '') + '">' + (submitted ? t('submitted') : t('pending')) + '</span>',
-      '<button type="button" class="submit-btn" onclick="PlanActVC.submitQuestion(\'' + escapeHtml(question.id) + '\')">' + t('submit') + '</button>',
+      '<button type="button" class="submit-btn"' + (canSubmit ? '' : ' disabled') + ' onclick="PlanActVC.submitDecision(\'' + escapeHtml(decision.id) + '\')">' + t('submit') + '</button>',
       '</div>',
       '</section>'
     ].join('');
@@ -186,7 +189,6 @@
 
   function render() {
     const summary = completionStatus();
-
     root.innerHTML = [
       '<section class="hero">',
       '<div class="eyebrow">' + escapeHtml(t('eyebrow')) + '</div>',
@@ -198,7 +200,7 @@
       '</div>',
       '</section>',
       '<div class="grid">',
-      state.session.questions.map(renderQuestion).join(''),
+      state.session.decisions.map(renderDecision).join(''),
       '</div>',
       '<div class="footer-banner' + (summary.completed ? ' complete' : '') + '">' + escapeHtml(summary.completed ? t('complete') : t('incomplete')) + '</div>'
     ].join('');
@@ -207,17 +209,15 @@
   async function bootstrap() {
     const sessionResponse = await fetch('/api/session');
     state.session = await sessionResponse.json();
-
     const answersResponse = await fetch('/api/answers');
     state.answers = await answersResponse.json();
-
     render();
   }
 
   window.PlanActVC = {
     toggleOption,
     updateNote,
-    submitQuestion
+    submitDecision
   };
 
   bootstrap().catch((error) => {

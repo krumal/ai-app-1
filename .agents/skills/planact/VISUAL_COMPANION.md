@@ -1,44 +1,41 @@
 # Goal
 
-1. Provide a visual companion for `planact` Brainstorming.
-2. Collect all related visual questions in one browser session instead of one question per chat turn.
-3. Keep user interaction under the orchestrator instead of letting the worker complete the session on the user's behalf.
+1. Resolve UI decisions during Brainstorming by showing real comparable mockups or user-visible states.
+2. Collect related visual decisions in one browser session.
+3. Keep product decisions with the user and the Brainstorming process with the orchestrator.
 
 # When To Use
 
-Use the visual companion only during Brainstorming, and only when the user would understand the decision better by seeing it than by reading it.
+Use Visual Companion only during Brainstorming and only when the user needs to see the decision:
 
-Good fits:
+1. alternative layouts in the real application shell
+2. alternative user flows or navigation structures
+3. default, loading, empty, error, success, popover, panel, or modal states
+4. hierarchy, density, grouping, or interaction choices that prose cannot represent reliably
 
-1. user journey comparisons
-2. layout or flow comparisons
-3. visual grouping of multiple related product choices
-4. UX direction selection where text alone would be ambiguous
+Do not use it for textual scope, API or data contracts, architecture choices without UI, simple yes/no questions, or choices that have no meaningfully different screen state.
 
-Do not use it for:
+# Task Directory Gate
 
-1. purely textual scope questions
-2. API or contract decisions that are clearer in prose
-3. simple yes/no clarifications better handled through `request_user_input`
-4. abstract product choices that do not depend on visual layout, hierarchy, or flow
+1. Before spawning the worker, resolve the task folder from the request, repository conventions, or existing task numbering.
+2. If the folder does not exist, create it before Visual Companion starts.
+3. Session setup must not create or modify `draft.md`, `plan.md`, placeholder task files, a task branch, or commits. The orchestrator integrates submitted answers into `draft.md` during Brainstorming.
+4. Keep the session under `<task-folder>/.planact/visual-companion/<session-id>/`.
 
 # High-Level Flow
 
-1. The orchestrator decides a visual batch is worth using.
-2. The orchestrator spawns `visual_companion_worker`.
-3. The worker creates a visual-companion session inside the task folder.
-4. The worker starts the local server.
-5. The worker writes `session.json` with all visual questions for the batch.
-6. The worker returns session details to the orchestrator immediately after the session is ready.
-7. The orchestrator gives the user the URL and instructions.
-8. The user answers all required questions in the browser UI.
-9. The orchestrator runs `scripts/wait-for-visual-companion.sh --session-dir <session_dir>`.
-10. The watcher blocks until `completed.json` exists, then prints `answers.json`.
-11. The orchestrator reads the answers and integrates them into `draft.md`.
+1. The orchestrator confirms that the current questions include one or more genuine visual decisions.
+2. The orchestrator creates or resolves the task folder.
+3. The orchestrator spawns `visual_companion_worker` with one coherent batch.
+4. The worker inspects the existing interface and relevant components before designing variants.
+5. The worker starts the local server, creates one self-contained HTML preview per option, writes `state/session.json`, and verifies every preview URL.
+6. The worker returns the session URL and artifact paths.
+7. The orchestrator gives the user the URL and runs the watcher.
+8. The user selects and submits decisions in the browser.
+9. The orchestrator integrates the submitted answers into `draft.md` and identifies any remaining Brainstorming questions.
+10. Continue Brainstorming under `BRAINSTORM.md`; the visual session does not start planning or implementation.
 
-# Task-Folder Storage Contract
-
-Store each session in:
+# Storage Contract
 
 ```text
 <task-folder>/.planact/visual-companion/<session-id>/
@@ -50,56 +47,63 @@ Store each session in:
 │   ├── events.jsonl
 │   └── server-info.json
 └── content/
+    ├── <decision>-<option>.html
+    └── ...
 ```
 
-Rules:
+1. Every preview is a self-contained HTML document with inline CSS and no network dependency.
+2. Runtime files are temporary and must never be committed.
+3. Do not reuse an old text-question session after this visual-decision cutover.
 
-1. Keep all artifacts inside the task folder.
-2. Do not write companion state to repo-global temp folders when the task folder is known.
-3. The worker may reuse the latest unfinished session only when doing so is clearly safer than starting a fresh one.
+# Orchestrator Input Contract
 
-# Orchestrator -> Worker Input Contract
-
-Pass the worker:
+Pass:
 
 1. `task_folder`
 2. `ui_language`
 3. `session_title`
 4. `session_intro`
-5. `ui_brief`
-6. `questions`
+5. `product_context`
+6. `visual_decisions`
 7. `completion_rule`
 8. `return_format`
 
-Recommended payload shape:
+Each visual decision must describe the user-visible decision, known product context, relevant route or component when discoverable, required states, and 2-3 materially different options. Do not provide prewritten text cards as a substitute for mockups.
+
+Recommended payload:
 
 ```json
 {
   "task_folder": "/abs/path/to/task-folder",
   "ui_language": "ru",
   "session_title": "Brainstorming: onboarding flow",
-  "session_intro": "Ответь на все визуальные вопросы ниже. После этого я продолжу следующий этап автоматически.",
-  "ui_brief": "Compact decision UI, clear grouping, cards for options, no unnecessary chrome.",
-  "completion_rule": "all_required_answered",
+  "session_intro": "Сравните варианты интерфейса и выберите направление.",
+  "product_context": {
+    "repository_root": "/abs/path/to/repo",
+    "current_surface": "Existing account onboarding",
+    "relevant_paths": ["apps/web/src/routes/onboarding.tsx"]
+  },
+  "completion_rule": "all_required_decisions_answered",
   "return_format": "structured_json_plus_summary",
-  "questions": [
+  "visual_decisions": [
     {
       "id": "journey_shape",
-      "title": "Какой сценарий берем?",
-      "description": "Выбери основной user flow для новой фичи.",
-      "type": "single_choice",
+      "title": "Основной сценарий onboarding",
+      "description": "Сравните два варианта в текущем shell приложения.",
       "required": true,
       "allow_free_text": true,
+      "type": "single_choice",
+      "required_states": ["default", "validation error", "success"],
       "options": [
         {
           "id": "wizard",
-          "label": "Wizard",
-          "description": "Пошаговый guided flow"
+          "label": "Пошаговый wizard",
+          "description": "Один смысловой шаг на экран"
         },
         {
-          "id": "sheet",
-          "label": "Single sheet",
-          "description": "Всё на одном экране"
+          "id": "single_page",
+          "label": "Одна страница",
+          "description": "Все поля и результат в одном потоке"
         }
       ]
     }
@@ -107,86 +111,81 @@ Recommended payload shape:
 }
 ```
 
-# UI Contract
+# Worker Output Session Contract
 
-The worker must generate one page containing all visual questions in the batch.
-
-Every question must support:
-
-1. localized title and description
-2. explicit required/optional state
-3. answer options
-4. optional free-text note
-5. a per-question `Submit` action
-
-The page must also show:
-
-1. session title
-2. short intro/instructions
-3. progress summary
-4. completed-state banner once all required answers are submitted
-
-# Language Rules
-
-1. The interface language must match the language used in the chat with the user.
-2. The orchestrator should pass `ui_language` explicitly instead of making the worker infer it.
-3. System strings such as `Submit`, `Required`, `Optional note`, and completion banners must be localized by the worker.
-
-# Completion Rules
-
-Default rule: `all_required_answered`
-
-This means:
-
-1. every required question has a submitted answer
-2. per-question free text is optional unless the orchestrator explicitly requires it
-3. once all required questions are answered, the orchestrator watcher may stop waiting and return
-
-`completed.json` should be written only when the completion rule is satisfied.
-
-# Worker Output Contract
-
-Return:
-
-1. `status`
-2. `url`
-3. `artifacts`
-4. `instructions`
-
-Recommended shape:
+The worker converts `visual_decisions` into `state/session.json`:
 
 ```json
 {
-  "status": "session_prepared",
-  "url": "http://localhost:58264",
-  "artifacts": {
-    "session_dir": "/abs/path/to/session",
-    "server_info_file": "/abs/path/to/session/state/server-info.json",
-    "answers_file": "/abs/path/to/session/state/answers.json",
-    "completed_file": "/abs/path/to/session/state/completed.json",
-    "session_file": "/abs/path/to/session/state/session.json",
-    "watch_command": "scripts/wait-for-visual-companion.sh --session-dir /abs/path/to/session"
-  },
-  "instructions": "Show the URL to the user, run the watcher command, then use its output as answers."
+  "session_title": "Brainstorming: onboarding flow",
+  "session_intro": "Сравните варианты интерфейса и выберите направление.",
+  "ui_language": "ru",
+  "completion_rule": "all_required_decisions_answered",
+  "decisions": [
+    {
+      "id": "journey_shape",
+      "title": "Основной сценарий onboarding",
+      "description": "Сравните варианты ниже.",
+      "type": "single_choice",
+      "required": true,
+      "allow_free_text": true,
+      "options": [
+        {
+          "id": "wizard",
+          "label": "Пошаговый wizard",
+          "description": "Один смысловой шаг на экран",
+          "preview_file": "journey_shape-wizard.html"
+        },
+        {
+          "id": "single_page",
+          "label": "Одна страница",
+          "description": "Все поля и результат в одном потоке",
+          "preview_file": "journey_shape-single_page.html"
+        }
+      ]
+    }
+  ]
 }
 ```
 
-# Worker Responsibilities
+# Mockup Quality Contract
 
-1. Start the server using `scripts/start-visual-companion.sh`.
-2. Write `state/session.json`.
-3. Read `state/server-info.json` and return the URL and file paths to the orchestrator.
-4. Include the watcher command for the orchestrator.
-5. Stop after the session is ready.
-6. Do not watch for completion.
-7. Do not make product decisions that the user did not make.
-8. Do not continue into planning or implementation.
-9. Never answer questions on the user's behalf.
-10. Never call `/api/submit-answer`.
-11. Never write `answers.json` or `completed.json` directly.
+1. Inspect the current app shell, routes, components, tokens, labels, density, and interaction patterns before authoring previews.
+2. Make options directly comparable:
+   1. use the same viewport and application shell
+   2. use the same realistic product data and terminology
+   3. show the same required states
+   4. change only the decision being compared
+3. Render product UI, not explanatory cards:
+   1. include recognizable application chrome and content hierarchy
+   2. show controls, content, status, and feedback where they exist in the proposed state
+   3. keep explanation outside the mockup in option label/description
+4. A preview that is only prose, a question, a list of pros/cons, or a renamed option card is invalid.
+5. If the worker cannot produce meaningful visual differences, it must return `not_visual` so the orchestrator asks the decision in chat.
+6. Before returning `session_prepared`, verify that every `preview_file` exists, is served successfully, and contains a rendered product surface.
 
-# Implementation Notes
+# Interaction And Completion
 
-1. Keep this companion focused on the local `planact` workflow and do not add cross-harness guidance here.
-2. Prefer `scripts/wait-for-visual-companion.sh` over ad-hoc polling in prompts.
-3. The orchestrator, not the worker, owns the interactive wait loop.
+1. Each decision requires at least one selected visual option before submit and supports an optional note.
+2. The page shows session instructions, progress, required state, and completion state.
+3. Default completion rule: `all_required_decisions_answered`.
+4. Write `completed.json` only when every required decision has a meaningful submitted answer.
+5. The worker never submits decisions or writes `answers.json`/`completed.json` on the user's behalf.
+
+# Worker Return Contract
+
+Return only:
+
+1. `status`: `session_prepared`, `not_visual`, or `error`
+2. URL when prepared
+3. session, answers, completed, and server-info paths
+4. watcher command
+5. one short instruction for the orchestrator
+
+# Orchestrator Rules
+
+1. Put all currently known related visual decisions into one session.
+2. Use the chat language for the session UI.
+3. Run `scripts/wait-for-visual-companion.sh` as the orchestrator after showing the URL.
+4. Use returned answers to update `draft.md` as part of Brainstorming.
+5. Do not let Visual Companion start Plan or implementation.

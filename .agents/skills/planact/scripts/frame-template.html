@@ -14,7 +14,7 @@
       line-height: 1.5;
     }
     .page {
-      max-width: 1100px;
+      max-width: 1480px;
       margin: 0 auto;
       padding: 32px 20px 48px;
     }
@@ -67,28 +67,28 @@
     }
     .grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      grid-template-columns: 1fr;
       gap: 18px;
     }
-    .question {
+    .decision {
       background: #ffffff;
       border: 1px solid #dbe5f4;
       border-radius: 18px;
       padding: 20px;
       box-shadow: 0 8px 24px rgba(15, 35, 70, 0.05);
     }
-    .question-head {
+    .decision-head {
       display: flex;
       justify-content: space-between;
       align-items: flex-start;
       gap: 12px;
       margin-bottom: 14px;
     }
-    .question-title {
+    .decision-title {
       margin: 0;
       font-size: 20px;
     }
-    .question-description {
+    .decision-description {
       margin: 6px 0 0;
       color: #55657f;
       font-size: 14px;
@@ -107,40 +107,78 @@
       color: #68768c;
     }
     .options {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(420px, 1fr));
+      gap: 16px;
       margin: 16px 0;
     }
-    .option {
-      width: 100%;
-      text-align: left;
+    .option-card {
       border: 1px solid #d5dfef;
-      border-radius: 14px;
-      padding: 14px 16px;
+      border-radius: 16px;
       background: #fbfdff;
-      cursor: pointer;
       transition: border-color 0.16s ease, box-shadow 0.16s ease, transform 0.16s ease;
+      overflow: hidden;
     }
-    .option:hover {
+    .option-card:hover {
       border-color: #6b97d8;
       transform: translateY(-1px);
       box-shadow: 0 8px 18px rgba(42, 92, 170, 0.08);
     }
-    .option.selected {
+    .option-card.selected {
       border-color: #2563eb;
       background: #eef4ff;
       box-shadow: 0 10px 22px rgba(37, 99, 235, 0.12);
     }
+    .mockup-wrap {
+      aspect-ratio: 16 / 10;
+      background: #e7edf6;
+      border-bottom: 1px solid #d5dfef;
+      overflow: hidden;
+    }
+    .mockup-frame {
+      width: 100%;
+      height: 100%;
+      border: 0;
+      background: #ffffff;
+      pointer-events: none;
+    }
+    .option-select {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: center;
+      gap: 5px 12px;
+      width: 100%;
+      border: 0;
+      padding: 14px 16px;
+      text-align: left;
+      background: transparent;
+      color: inherit;
+      cursor: pointer;
+    }
     .option-label {
+      display: block;
       font-size: 15px;
       font-weight: 700;
-      margin: 0 0 4px;
     }
     .option-description {
+      display: block;
+      grid-column: 1;
       font-size: 13px;
       color: #55657f;
-      margin: 0;
+    }
+    .option-action {
+      grid-column: 2;
+      grid-row: 1 / span 2;
+      border-radius: 999px;
+      padding: 7px 10px;
+      font-size: 12px;
+      font-weight: 700;
+      color: #305a96;
+      background: #eef4ff;
+    }
+    .option-card.selected .option-action {
+      color: #ffffff;
+      background: #2563eb;
     }
     .note-wrap {
       margin-top: 14px;
@@ -163,7 +201,7 @@
       color: inherit;
       background: #ffffff;
     }
-    .question-actions {
+    .decision-actions {
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -207,6 +245,12 @@
       border-color: #bfe1cb;
       color: #1f6f43;
       font-weight: 700;
+    }
+    @media (max-width: 560px) {
+      .page { padding: 20px 12px 32px; }
+      .options { grid-template-columns: 1fr; }
+      .decision-head { flex-direction: column; }
+      .mockup-wrap { aspect-ratio: 4 / 3; }
     }
   </style>
 </head>
