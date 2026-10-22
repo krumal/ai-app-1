@@ -1,9 +1,7 @@
 import 'dotenv/config';
 
-import { execFile } from 'node:child_process';
 import { promises as fs } from 'node:fs';
 import path from 'node:path';
-import { promisify } from 'node:util';
 import OpenAI from 'openai';
 import { zodFunction } from 'openai/helpers/zod';
 import type {
@@ -11,8 +9,7 @@ import type {
   ChatCompletionMessageParam,
 } from 'openai/resources/chat/completions';
 import { z } from 'zod';
-
-const execFileAsync = promisify(execFile);
+import { runReviewedNodeFile } from './reviewed-execution.js';
 
 const apiKey = process.env.OPENAI_API_KEY;
 const baseURL = process.env.OPENAI_API_BASE_URL ?? 'https://api.openai.com/v1';
@@ -154,30 +151,12 @@ async function toolUseAgentWithZodSchema() {
 
   const runNodeFile = createDemoTool({
     name: 'run_node_file',
-    description: 'Run a JavaScript file from agent-workspace with Node.js. For example, fileName "hello-world.js" is equivalent to running "node agent-workspace/hello-world.js" from the lesson folder.',
+    description: 'Request execution of a .js or .mjs file from agent-workspace. A human must inspect and approve the exact code in an interactive terminal for every call. Refused in unattended runs; approval is not a sandbox.',
     parameters: z.object({
       fileName: fileNameSchema,
     }),
     async execute(args) {
-      const filePath = resolveWorkspaceFile(args.fileName);
-
-      try {
-        const { stdout, stderr } = await execFileAsync(process.execPath, [filePath], {
-          cwd: agentWorkspace,
-          timeout: 5000,
-        });
-
-        return {
-          ok: true,
-          stdout,
-          stderr,
-        };
-      } catch (error) {
-        return {
-          ok: false,
-          error: error instanceof Error ? error.message : String(error),
-        };
-      }
+      return runReviewedNodeFile({ workspace: agentWorkspace, fileName: args.fileName });
     },
   });
 

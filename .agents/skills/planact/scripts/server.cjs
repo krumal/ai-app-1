@@ -1,11 +1,11 @@
 const fs = require('fs');
 const http = require('http');
 const path = require('path');
+const { localSettings, isLocalRequest } = require('./local-access.cjs');
+process.umask(0o077);
 
 const SESSION_DIR = process.env.PLANACT_VC_DIR;
-const HOST = process.env.PLANACT_VC_HOST || '127.0.0.1';
-const URL_HOST = process.env.PLANACT_VC_URL_HOST || (HOST === '127.0.0.1' ? 'localhost' : HOST);
-const PORT = process.env.PLANACT_VC_PORT || (49152 + Math.floor(Math.random() * 16383));
+const { host: HOST, urlHost: URL_HOST, port: PORT } = localSettings(process.env);
 
 if (!SESSION_DIR) {
   console.error(JSON.stringify({ error: 'Missing PLANACT_VC_DIR' }));
@@ -86,21 +86,33 @@ function sendHtml(res) {
 }
 
 function sendPreview(req, res) {
-  const requestUrl = new URL(req.url, 'http://localhost');
-  const fileName = decodeURIComponent(requestUrl.pathname.slice('/content/'.length));
+  let fileName;
+  try {
+    const requestUrl = new URL(req.url, 'http://localhost');
+    fileName = decodeURIComponent(requestUrl.pathname.slice('/content/'.length));
+  } catch {
+    sendJson(res, 400, { error: 'Invalid preview file' });
+    return;
+  }
   if (!fileName || fileName !== path.basename(fileName) || path.extname(fileName).toLowerCase() !== '.html') {
     sendJson(res, 400, { error: 'Invalid preview file' });
     return;
   }
 
   const filePath = path.join(CONTENT_DIR, fileName);
+  let descriptor;
   try {
-    if (!fs.statSync(filePath).isFile()) {
+    descriptor = fs.openSync(filePath, fs.constants.O_RDONLY | fs.constants.O_NOFOLLOW | fs.constants.O_NONBLOCK);
+    if (!fs.fstatSync(descriptor).isFile()) {
       throw new Error('Not a file');
     }
-    res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
-    fs.createReadStream(filePath).pipe(res);
+    res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8',
+      'Content-Security-Policy': "sandbox; default-src 'none'; style-src 'unsafe-inline'; img-src data:; font-src data:; base-uri 'none'; form-action 'none'",
+      'X-Content-Type-Options': 'nosniff' });
+    fs.createReadStream(filePath, { fd: descriptor, autoClose: true }).on('error', () => res.destroy()).pipe(res);
+    descriptor = undefined;
   } catch (error) {
+    if (descriptor !== undefined) fs.closeSync(descriptor);
     sendJson(res, 404, { error: 'Preview not found' });
   }
 }
@@ -150,6 +162,13 @@ function validateSubmission(session, payload) {
 }
 
 const server = http.createServer(async (req, res) => {
+  // This helper has no public login: never expose it outside loopback, and
+  // reject unrelated browser origins/DNS names before reading or writing state.
+  res.setHeader('Cache-Control', 'no-store');
+  if (!isLocalRequest(req, server.address().port)) {
+    sendJson(res, 403, { error: 'Only the local Visual Companion may access this server.' });
+    return;
+  }
   if (req.method === 'GET' && req.url === '/') {
     sendHtml(res);
     return;
@@ -224,12 +243,13 @@ const server = http.createServer(async (req, res) => {
 });
 
 server.listen(PORT, HOST, () => {
+  const port = server.address().port;
   const info = {
     type: 'server-started',
     host: HOST,
     url_host: URL_HOST,
-    port: Number(PORT),
-    url: `http://${URL_HOST}:${PORT}`,
+    port,
+    url: `http://${URL_HOST}:${port}`,
     session_dir: SESSION_DIR,
     state_dir: STATE_DIR,
     content_dir: CONTENT_DIR

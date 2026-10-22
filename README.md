@@ -43,6 +43,27 @@ AI digest and estimates still send their selected text to the configured model
 provider only when requested. Use them only with data you may share with that
 provider; these changes do not make that transmission local or redact secrets.
 
+## Educational agent and Visual Companion
+
+The separate lesson-2 tool-use demo keeps code generation, but every script
+execution now requires a human to inspect the displayed source and type its
+one-call confirmation in an interactive terminal. Unattended calls are refused.
+It runs the reviewed snapshot, not a file reopened after approval, and does not
+inherit API credentials from the parent environment. Only ordinary `.js`/`.mjs`
+files up to 64 KiB are accepted. This is **not a sandbox**: approved code and
+its imports can still access files and the network as the current user.
+
+For example, the model can create `hello-world.js`, but asking to run it alone
+does not execute anything; a person must approve that exact source first.
+
+The PlanAct Visual Companion is local-only too. Public bind/display hosts are
+rejected; its HTTP routes check Host, Origin and cross-site browser requests.
+State created by the helper is owner-only. Preview documents remain sandboxed
+even when opened directly, do not execute scripts or load external resources,
+and cannot be served through a symbolic-link file. This helper has no public
+login or multi-user authorization; local operating-system processes remain
+trusted. Do not put it behind a public proxy without a separate access design.
+
 ## Test worlds
 
 Generate local development worlds under `.local/worlds/<name>`:

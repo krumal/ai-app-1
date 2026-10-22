@@ -3,6 +3,7 @@
 # Usage: start-visual-companion.sh --task-dir <path> [--host <bind-host>] [--url-host <display-host>] [--foreground] [--background]
 
 set -euo pipefail
+umask 077
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 

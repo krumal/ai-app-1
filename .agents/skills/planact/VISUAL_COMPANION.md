@@ -37,6 +37,16 @@ Do not use it for textual scope, API or data contracts, architecture choices wit
 
 # Storage Contract
 
+The companion is strictly local: `--host` and `--url-host` accept only loopback
+addresses (`127.0.0.1`, `localhost`, `::1`). Non-local values fail at startup.
+Host/Origin checks reject unrelated browser requests, and mutation requests
+require a matching Origin. It is not a publicly authenticated service; do not
+publish it through an external proxy without a separate access design.
+New session files are private to their owner. Preview HTML is served under a
+sandbox policy without scripts or external resources, including direct opens.
+Use self-contained HTML/CSS mockups; an isolated preview cannot call the
+companion API. Filesystem links are not accepted as preview files.
+
 ```text
 <task-folder>/.planact/visual-companion/<session-id>/
 ├── state/
