@@ -1,8 +1,13 @@
 import path from "node:path";
+import { lstatSync } from "node:fs";
 import type { ProjectConfig } from "../shared/types";
 
-export function getTaskRootPath(project: ProjectConfig) {
-  return path.join(project.repoPath, project.taskDirName);
+export function getTaskRootPath(project: Pick<ProjectConfig, "repoPath" | "taskDirName">) {
+  if (!project.taskDirName || project.taskDirName === "." || project.taskDirName === ".."
+    || /[/\\]/.test(project.taskDirName)) {
+    throw new Error("Task directory must be a single directory name.");
+  }
+  return resolveTaskPath(project.repoPath, project.taskDirName);
 }
 
 export function normalizeTaskRelativePath(value: string) {
@@ -19,8 +24,24 @@ export function resolveTaskPath(
   const resolvedPath = path.resolve(normalizedRootPath, normalizedRelativePath);
   const relativeToRoot = path.relative(normalizedRootPath, resolvedPath);
 
-  if (relativeToRoot.startsWith("..") || path.isAbsolute(relativeToRoot)) {
+  if (relativeToRoot === ".." || relativeToRoot.startsWith(`..${path.sep}`) || path.isAbsolute(relativeToRoot)) {
     throw new Error(errorMessage);
+  }
+
+  // Never follow a task-root, directory, file, or dangling symbolic link.
+  // Missing suffixes are allowed so normal task/file creation still works.
+  let current = normalizedRootPath;
+  const parts = relativeToRoot ? relativeToRoot.split(path.sep) : [];
+  for (let index = 0; index <= parts.length; index += 1) {
+    if (index > 0) current = path.join(current, parts[index - 1]!);
+    try {
+      if (lstatSync(current).isSymbolicLink()) {
+        throw new Error("Symbolic links are not allowed in task paths.");
+      }
+    } catch (error) {
+      if ((error as NodeJS.ErrnoException).code === "ENOENT") break;
+      throw error;
+    }
   }
 
   return resolvedPath;

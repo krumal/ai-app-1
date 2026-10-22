@@ -55,6 +55,7 @@ export function createRealtimeService(overrides: Partial<RealtimeDependencies> =
       chokidar.watch(taskRootPath, {
         ignoreInitial: true,
         persistent: true,
+        followSymlinks: false,
       }),
     debounceMs: DEFAULT_DEBOUNCE_MS,
     ...overrides,

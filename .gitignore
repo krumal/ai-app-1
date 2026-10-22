@@ -4,6 +4,7 @@ build
 .DS_Store
 /.config
 .local
+/temp/
 
 .codex/config.toml
 .env

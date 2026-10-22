@@ -1,6 +1,7 @@
 import { access, mkdir, readFile, stat, writeFile } from "node:fs/promises";
 import { homedir } from "node:os";
 import path from "node:path";
+import { getTaskRootPath } from "./task-paths";
 import type { AppConfig, ProjectConfig, ProjectSummary } from "../shared/types";
 
 const DEFAULT_TASK_DIR_NAME = ".tasks";
@@ -99,7 +100,7 @@ export async function getProjectSummaries(
 ): Promise<ProjectSummary[]> {
   return Promise.all(
     config.projects.map(async (project) => {
-      const taskRootPath = path.join(project.repoPath, project.taskDirName);
+      const taskRootPath = getTaskRootPath(project);
       const exists = await fileExists(taskRootPath);
 
       return {
@@ -119,6 +120,7 @@ export async function addProject(input: {
 }) {
   const config = await loadConfig();
   const repoPath = path.resolve(input.repoPath.trim());
+  getTaskRootPath({ repoPath, taskDirName: input.taskDirName || DEFAULT_TASK_DIR_NAME });
   const repoStat = await stat(repoPath);
 
   if (!repoStat.isDirectory()) {

@@ -24,6 +24,25 @@ Task tracker with a kanban board that reads local repository files from `.tasks/
 
 3. Open [http://127.0.0.1:5173](http://127.0.0.1:5173)
 
+## Local access and file safety
+
+LocalTasks is a single-user local application, not a public hosted service.
+The API binds to `127.0.0.1`; HTTP and WebSocket requests reject non-local
+hosts and unrelated browser origins. The frontend uses the Vite proxy on
+port 5173, which now fails explicitly if that port is occupied. Wildcard
+CORS is not enabled. Do not expose either server through a public proxy
+without a separate authentication layer; local processes remain trusted.
+
+Task directory names must be one directory name inside the selected repository.
+Task roots, nested directories and files must not be symbolic links. This also
+applies to `labels.json`, estimate files and AI input files. These checks prevent
+following existing links; they are not a sandbox against a hostile local process
+concurrently replacing filesystem paths.
+
+AI digest and estimates still send their selected text to the configured model
+provider only when requested. Use them only with data you may share with that
+provider; these changes do not make that transmission local or redact secrets.
+
 ## Test worlds
 
 Generate local development worlds under `.local/worlds/<name>`:
@@ -40,6 +59,19 @@ Useful presets:
 4. `large` creates a bigger board for scroll and performance checks.
 
 Use `--seed <number>` for deterministic output. Add `--register` only when you want the generated world to become the active project in `~/.config/localtasks/config.json`.
+
+`--name` accepts a plain directory name, not a path. `--clean` replaces only
+an existing generated world with a matching `.localtasks-world.json` marker;
+it refuses symbolic links, other targets, and unmarked directories. Older worlds
+without that marker are not removed automatically: use a new world name instead.
+
+## Verify
+
+```bash
+bun test
+bun run check
+bun run build
+```
 
 ## Data model
 

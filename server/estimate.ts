@@ -1,5 +1,4 @@
 import { access, mkdir, readFile, writeFile } from "node:fs/promises";
-import path from "node:path";
 import type {
   EstimateParticipantRole,
   EstimateVote,
@@ -230,7 +229,7 @@ export function buildEstimate(votes: EstimateVote[], sources: string[]) {
 }
 
 export async function readEstimate(context: EstimateContext): Promise<TaskEstimate | null> {
-  const estimatePath = path.join(resolveEstimateTaskPath(context), ESTIMATE_FILE_NAME);
+  const estimatePath = resolveTaskPath(resolveEstimateTaskPath(context), ESTIMATE_FILE_NAME);
 
   try {
     const raw = await readFile(estimatePath, "utf8");
@@ -257,12 +256,12 @@ export async function writeEstimate(context: EstimateContext, estimate: TaskEsti
 
   const taskRoot = resolveEstimateTaskPath(context);
   await mkdir(taskRoot, { recursive: true });
-  const estimatePath = path.join(taskRoot, ESTIMATE_FILE_NAME);
+  const estimatePath = resolveTaskPath(taskRoot, ESTIMATE_FILE_NAME);
   await writeFile(estimatePath, `${JSON.stringify(estimate, null, 2)}\n`, "utf8");
 }
 
 export async function estimateFileExists(context: EstimateContext) {
-  const estimatePath = path.join(resolveEstimateTaskPath(context), ESTIMATE_FILE_NAME);
+  const estimatePath = resolveTaskPath(resolveEstimateTaskPath(context), ESTIMATE_FILE_NAME);
   return access(estimatePath).then(() => true).catch(() => false);
 }
 
@@ -272,14 +271,14 @@ async function readEstimateSources(context: EstimateContext): Promise<EstimateSo
   const requiredFiles = await Promise.all(
     REQUIRED_SOURCE_FILES.map(async (fileName) => ({
       path: fileName,
-      content: await readFile(path.join(resolvedRoot, fileName), "utf8"),
+      content: await readFile(resolveTaskPath(resolvedRoot, fileName), "utf8"),
     })),
   );
 
   const sources: EstimateSource[] = [...requiredFiles];
   try {
     const implementationProgress = await readFile(
-      path.join(resolvedRoot, OPTIONAL_SOURCE_FILE),
+      resolveTaskPath(resolvedRoot, OPTIONAL_SOURCE_FILE),
       "utf8",
     );
     sources.push({

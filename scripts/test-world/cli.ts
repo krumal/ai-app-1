@@ -1,6 +1,6 @@
 import path from "node:path";
 import { addProject, getProjectSummaries, loadConfig } from "../../server/config";
-import { writeWorld, validateWorld } from "./filesystem";
+import { writeWorld, validateWorld, resolveWorldPath } from "./filesystem";
 import { buildPreset, isPresetName, PRESET_NAMES, type PresetName } from "./presets";
 
 type CliOptions = {
@@ -29,7 +29,7 @@ async function main() {
   }
 
   const name = options.name ?? `${options.preset}-${options.seed}`;
-  const repoPath = path.resolve(process.cwd(), ".local", "worlds", name);
+  const repoPath = resolveWorldPath(name);
   const world = buildPreset({
     preset: options.preset,
     name,

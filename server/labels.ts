@@ -1,5 +1,4 @@
 import { mkdir, readFile, writeFile } from "node:fs/promises";
-import path from "node:path";
 import type {
   BoardLabel,
   CreateLabelInput,
@@ -93,7 +92,7 @@ export function resolveLabels(labelIds: string[], labels: BoardLabel[]) {
 
 async function readLabelsFile(taskRootPath: string): Promise<BoardLabel[]> {
   try {
-    const raw = await readFile(path.join(taskRootPath, LABELS_FILE_NAME), "utf8");
+    const raw = await readFile(resolveTaskPath(taskRootPath, LABELS_FILE_NAME), "utf8");
     const parsed = JSON.parse(raw) as Partial<LabelRegistry>;
 
     if (parsed.version !== 1 || !Array.isArray(parsed.labels)) {
@@ -118,7 +117,7 @@ async function writeLabelsFile(taskRootPath: string, labels: BoardLabel[]) {
   };
 
   await writeFile(
-    path.join(taskRootPath, LABELS_FILE_NAME),
+    resolveTaskPath(taskRootPath, LABELS_FILE_NAME),
     `${JSON.stringify(registry, null, 2)}\n`,
     "utf8",
   );

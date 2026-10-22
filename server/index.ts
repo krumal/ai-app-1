@@ -18,6 +18,7 @@ import {
 } from "./labels";
 import { realtimeService } from "./realtime";
 import { getTaskRootPath, resolveTaskPath } from "./task-paths";
+import { rejectNonLocalRequest } from "./local-access";
 import type {
   BoardCard,
   CreateLabelInput,
@@ -39,9 +40,6 @@ function json(data: unknown, status = 200) {
     status,
     headers: {
       "content-type": "application/json; charset=utf-8",
-      "access-control-allow-origin": "*",
-      "access-control-allow-methods": "GET,POST,PATCH,DELETE,OPTIONS",
-      "access-control-allow-headers": "content-type",
     },
   });
 }
@@ -49,11 +47,6 @@ function json(data: unknown, status = 200) {
 function empty(status = 204) {
   return new Response(null, {
     status,
-    headers: {
-      "access-control-allow-origin": "*",
-      "access-control-allow-methods": "GET,POST,PATCH,DELETE,OPTIONS",
-      "access-control-allow-headers": "content-type",
-    },
   });
 }
 
@@ -162,6 +155,8 @@ function getBoardCards(board: ProjectBoard) {
 }
 
 export async function apiHandler(request: Request) {
+  const rejected = rejectNonLocalRequest(request);
+  if (rejected) return rejected;
   const url = new URL(request.url);
 
   if (request.method === "OPTIONS") {
@@ -404,18 +399,20 @@ export async function apiHandler(request: Request) {
   return notFound(`Route "${request.method} ${url.pathname}" was not found.`);
 }
 
+export function handleServerRequest(request: Request, server: { upgrade(request: Request): boolean }) {
+  const url = new URL(request.url);
+  const rejected = rejectNonLocalRequest(request, url.pathname === "/ws");
+  if (rejected) return rejected;
+  if (url.pathname === "/ws" && server.upgrade(request)) return;
+  return apiHandler(request);
+}
+
 if (process.env.LOCALTASKS_SKIP_SERVER !== "1") {
   const server = Bun.serve({
+    hostname: "127.0.0.1",
     port: PORT,
     idleTimeout: 120,
-    fetch(request, server) {
-      const url = new URL(request.url);
-      if (url.pathname === "/ws" && server.upgrade(request)) {
-        return;
-      }
-
-      return apiHandler(request);
-    },
+    fetch: handleServerRequest,
     websocket: {
       open: realtimeService.open,
       message: realtimeService.message,

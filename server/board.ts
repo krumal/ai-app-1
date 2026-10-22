@@ -199,7 +199,7 @@ async function buildGroupList(
   groupName: string,
   labels: BoardLabel[],
 ): Promise<BoardList> {
-  const groupAbsolutePath = path.join(taskRootPath, groupName);
+  const groupAbsolutePath = resolveTaskPath(taskRootPath, groupName);
   const entries = await readdir(groupAbsolutePath, { withFileTypes: true });
   const cards: BoardCard[] = [];
 
@@ -342,11 +342,13 @@ export async function getCardEstimateEligibility(
   return { eligible: true, reason: null };
 }
 
-function isCardFilePresent(taskRootPath: string, cardRelativePath: string, fileName: string) {
-  const filePath = path.join(taskRootPath, cardRelativePath, fileName);
-  return readFile(filePath, "utf8")
-    .then(() => true)
-    .catch(() => false);
+async function isCardFilePresent(taskRootPath: string, cardRelativePath: string, fileName: string) {
+  try {
+    await readFile(resolveTaskPath(taskRootPath, path.join(cardRelativePath, fileName)), "utf8");
+    return true;
+  } catch {
+    return false;
+  }
 }
 
 function estimateIgnoredPaths(folderRelativePath: string) {
@@ -380,7 +382,7 @@ async function readCardLabelIds(taskRootPath: string, defaultOpenFilePath: strin
     return [];
   }
 
-  const content = await readFile(path.join(taskRootPath, defaultOpenFilePath), "utf8");
+  const content = await readFile(resolveTaskPath(taskRootPath, defaultOpenFilePath), "utf8");
   return parseFrontmatterLabelIds(content);
 }
 
@@ -389,7 +391,7 @@ async function buildFileTree(
   relativePath: string,
   excludePaths: Set<string> = new Set(),
 ): Promise<FileTreeNode[]> {
-  const absolutePath = path.join(taskRootPath, relativePath);
+  const absolutePath = resolveTaskPath(taskRootPath, relativePath);
   const parts = relativePath.split(path.sep);
   const name = parts.at(-1) ?? relativePath;
 
@@ -415,7 +417,7 @@ async function buildFileTree(
       }
 
       if (entry.isFile()) {
-        const fileStats = await stat(path.join(taskRootPath, childRelativePath));
+        const fileStats = await stat(resolveTaskPath(taskRootPath, childRelativePath));
         children.push({
           id: childRelativePath,
           name: entry.name,
